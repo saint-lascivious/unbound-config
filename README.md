@@ -5,7 +5,7 @@ configuration file for unbound recursive dns resolver
 ## Usage
 * Install dependencies
 ```
-apt-get install git screen
+apt-get install unbound libevent-dev
 ```
 
 * Backup existing environment files
