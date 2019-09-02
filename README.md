@@ -12,7 +12,7 @@ apt-get install unbound libevent-dev
 ```
 cd ~
 mkdir .backup
-sudo cp ~/.backup /etc/unbound/unbound.conf.d/*.conf
+sudo cp /etc/unbound/unbound.conf.d/*.conf ~/.backup
 sudo rm /etc/unbound/unbound.conf.d/pi-hole.conf
 ```
 * Clone the repository:
