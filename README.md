@@ -15,7 +15,7 @@ mkdir .backup
 sudo cp /etc/unbound/unbound.conf.d/*.conf ~/.backup
 sudo rm /etc/unbound/unbound.conf.d/pi-hole.conf
 ```
-* Clone the repository:
+* Download the config file:
 ```
 cd /etc/unbound/unbound.conf.d/
 sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/unbound.conf
