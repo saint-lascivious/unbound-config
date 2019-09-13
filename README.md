@@ -1,9 +1,17 @@
 # unbound-config
-configuration file for unbound recursive dns resolver
 
+configuration file for [unbound](https://nlnetlabs.nl/projects/unbound/about/) recursive dns resolver
+
+Settings and values have been derived in part by some suggested
+defaults in [docs.pi-hole.net/guides/unbound](https://docs.pi-hole.net/guides/unbound/) in order to avoid
+some possible interoperability issues and also from the documentation
+found at [nlnetlabs.nl/documentation/unbound/howto-optimise](https://nlnetlabs.nl/documentation/unbound/howto-optimise/) 
+specifically regarding optimising unbound
 
 ## Usage
 * Install dependencies
+[unbound](https://packages.debian.org/buster/unbound)
+[libevent-dev](https://packages.debian.org/buster/libevent-dev)
 ```
 apt-get install unbound libevent-dev
 ```
@@ -14,7 +22,7 @@ cd ~
 mkdir .backup
 sudo cp /etc/unbound/unbound.conf.d/*.conf ~/.backup
 ```
-* Remove pi-hole.conf if you deployed unbound using Pi-hole documentation
+* Remove pi-hole.conf if you deployed unbound using [Pi-hole documentation](https://docs.pi-hole.net/guides/unbound/)
 ```
 sudo rm /etc/unbound/unbound.conf.d/pi-hole.conf
 ```
@@ -30,7 +38,9 @@ sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/mast
 sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/use-multithreaded-udp.conf
 ```
 * Restart unbound
-```sudo service unbound restart```
+```
+sudo service unbound restart
+```
 
 ## Contact
 * Discord
