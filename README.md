@@ -13,6 +13,9 @@ apt-get install unbound libevent-dev
 cd ~
 mkdir .backup
 sudo cp /etc/unbound/unbound.conf.d/*.conf ~/.backup
+```
+* Remove pi-hole.conf if you deployed unbound using Pi-hole documentation
+```
 sudo rm /etc/unbound/unbound.conf.d/pi-hole.conf
 ```
 * Download the main config file:
