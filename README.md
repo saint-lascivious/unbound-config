@@ -15,12 +15,17 @@ mkdir .backup
 sudo cp /etc/unbound/unbound.conf.d/*.conf ~/.backup
 sudo rm /etc/unbound/unbound.conf.d/pi-hole.conf
 ```
-* Download the config file:
+* Download the main config file:
 ```
 cd /etc/unbound/unbound.conf.d/
 sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/unbound.conf
 ```
-
+* Download additional config files as required:
+```
+sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/use-ipv6.conf
+sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/use-libevent.conf
+sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/use-multithreaded-udp.conf
+```
 * Restart unbound
 ```sudo service unbound restart```
 
