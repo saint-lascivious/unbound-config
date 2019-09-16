@@ -1,6 +1,6 @@
 # unbound-config
 
-configuration file for [unbound](https://nlnetlabs.nl/projects/unbound/about/) recursive dns resolver
+configuration files for [unbound](https://nlnetlabs.nl/projects/unbound/about/) recursive dns resolver
 
 Settings and values have been derived in part by some suggested
 defaults in [docs.pi-hole.net/guides/unbound](https://docs.pi-hole.net/guides/unbound/) in order to avoid
@@ -33,9 +33,15 @@ sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/mast
 ```
 * Download additional config files as required:
 ```
+sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/use-expired-records.conf
 sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/use-ipv6.conf
+sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/use-large-buffers.conf
 sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/use-libevent.conf
 sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/use-multithreaded-udp.conf
+sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/use-optimized-caches.conf
+sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/use-optimized-threads.conf
+sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/use-prefetch.conf
+sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/use-safe-edns-buffer.conf
 ```
 * Restart unbound
 ```
