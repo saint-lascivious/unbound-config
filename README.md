@@ -34,6 +34,7 @@ sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/mast
 * Download additional config files as required:
 ```
 sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/use-expired-records.conf
+sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/use-extended-statistics.conf
 sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/use-ipv6.conf
 sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/use-large-buffers.conf
 sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/use-libevent.conf
