@@ -33,6 +33,9 @@ sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/mast
 ```
 * Download additional config files as required:
 ```
+sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/use-access-control.conf
+sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/use-cache-min-ttl.conf
+sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/use-caps-for-id.conf
 sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/use-expired-records.conf
 sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/use-extended-statistics.conf
 sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/use-ipv6.conf
@@ -43,6 +46,7 @@ sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/mast
 sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/use-optimized-threads.conf
 sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/use-own-identity.conf
 sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/use-prefetch.conf
+sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/use-rate-limiting.conf
 sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/use-safe-edns-buffer.conf
 sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/use-unbound-control.conf
 ```
