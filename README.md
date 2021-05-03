@@ -26,9 +26,12 @@ sudo cp /etc/unbound/unbound.conf.d/*.conf ~/.backup
 ```
 sudo rm /etc/unbound/unbound.conf.d/pi-hole.conf
 ```
-* Download the main config file:
+* Download the base config file:
+Switch to the /etc/unbound/unbound.conf.d/ directory
 ```
 cd /etc/unbound/unbound.conf.d/
+Download the base config file
+```
 sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/unbound.conf
 ```
 * Download additional config files as required:
