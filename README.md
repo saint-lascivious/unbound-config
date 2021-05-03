@@ -32,25 +32,77 @@ cd /etc/unbound/unbound.conf.d/
 sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/unbound.conf
 ```
 * Download additional config files as required:
+
+Access control
 ```
 sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/use-access-control.conf
+```
+Modify cache TTL
+```
 sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/use-cache-min-ttl.conf
+```
+Use capitalization randomization
+```
 sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/use-caps-for-id.conf
+```
+Serve expired records
+```
 sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/use-expired-records.conf
+```
+Extended statistics for unbound-control
+```
 sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/use-extended-statistics.conf
+```
+Listen on ipv6
+```
 sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/use-ipv6.conf
+```
+Use large buffers
+```
 sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/use-large-buffers.conf
+```
+Use libevent
+```
 sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/use-libevent.conf
+```
+Multithreaded udp
+```
 sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/use-multithreaded-udp.conf
+```
+Large caches
+```
 sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/use-optimized-caches.conf
+```
+Multithreading
+```
 sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/use-optimized-threads.conf
+```
+Custom server identity
+```
 sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/use-own-identity.conf
+```
+User managed root.hints
+```
+sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/use-own-root-hints.conf
+```
+Cache prefetching
+```
 sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/use-prefetch.conf
+```
+Rate limiting
+```
 sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/use-rate-limiting.conf
+```
+Safe EDNS buffer
+```
 sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/use-safe-edns-buffer.conf
+```
+Use unbound-control
+```
 sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/use-unbound-control.conf
 ```
 * Restart unbound
+After any changes to the server configuration the server must be restarted
 ```
 sudo service unbound restart
 ```
