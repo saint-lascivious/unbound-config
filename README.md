@@ -22,90 +22,107 @@ cd ~
 mkdir .backup
 sudo cp /etc/unbound/unbound.conf.d/*.conf ~/.backup
 ```
-* Remove pi-hole.conf if you deployed unbound using [Pi-hole documentation](https://docs.pi-hole.net/guides/unbound/)
-```
-sudo rm /etc/unbound/unbound.conf.d/pi-hole.conf
-```
-* Download base config file:
-Switch to the /etc/unbound/unbound.conf.d/ directory
+* Switch to the /etc/unbound/unbound.conf.d/ directory
 ```
 cd /etc/unbound/unbound.conf.d/
 ```
-Download base config file
+
+* Remove pi-hole.conf if you deployed unbound using [Pi-hole documentation](https://docs.pi-hole.net/guides/unbound/)
 ```
-sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/unbound.conf
+sudo rm pi-hole.conf
 ```
 
-* Download additional config files as required:
+* Download the base config:
+```
+sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/base.conf
+```
 
-Access control
+* Download any additional config file fragments as required:
+Access Control
 ```
-sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/use-access-control.conf
+sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/access-control.conf
 ```
-Modify cache TTL
+Buffers (Recommended)
 ```
-sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/use-cache-min-ttl.conf
+sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/buffers.conf
 ```
-Use capitalization randomization
+Caches (Recommended)
+```
+sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/caches.conf
+```
+Cache TTL
+```
+sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/cache-ttl.conf
+```
+Address Capitalization Randomization
 ```
 sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/use-caps-for-id.conf
 ```
-Serve expired records
+Hardening (Recommended)
 ```
-sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/use-expired-records.conf
+sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/hardening.conf
 ```
-Extended statistics for unbound-control
+IPv6
 ```
-sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/use-extended-statistics.conf
+sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/ipv6.conf
 ```
-Listen on ipv6
+Libevent
 ```
-sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/use-ipv6.conf
+sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/libevent.conf
 ```
-Use large buffers
+Local Records
 ```
-sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/use-large-buffers.conf
+sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/local-records.conf
 ```
-Use libevent
+Multithreaded UDP
 ```
-sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/use-libevent.conf
-```
-Multithreaded udp
-```
-sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/use-multithreaded-udp.conf
-```
-Large caches
-```
-sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/use-optimized-caches.conf
+sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/multithreaded-udp.conf
 ```
 Multithreading
 ```
-sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/use-optimized-threads.conf
+sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/multithreading.conf
 ```
-Custom server identity
+Cache Prefetch (Recommended)
 ```
-sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/use-own-identity.conf
+sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/prefetch.conf
 ```
-User managed root.hints
+Private Address Ranges (Recommended)
 ```
-sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/use-own-root-hints.conf
+sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/private-ranges.conf
 ```
-Cache prefetching
+Rate Limiting
 ```
-sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/use-prefetch.conf
+sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/rate-limiting.conf
 ```
-Rate limiting
+Root Hints
 ```
-sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/use-rate-limiting.conf
+sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/root-hints.conf
 ```
-Safe EDNS buffer
+Safe EDNS Buffer (Reccomended)
 ```
-sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/use-safe-edns-buffer.conf
+sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/safe-edns-buffer.conf
 ```
-Use unbound-control
+Serve Expired Records
 ```
-sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/use-unbound-control.conf
+sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/serve-expired-records.conf
 ```
+Server Identity
+```
+sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/server-identity.conf
+```
+Unbound Control
+```
+sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/unbound-control.conf
+```
+Extended Statistics
+```
+sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/unbound-control-extended-statistics.conf
+```
+Verbosity (Recommended)
+```
+sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/verbosity.conf
+```
+
 * Restart unbound
 After any changes to the server configuration the server must be restarted
 ```
