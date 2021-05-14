@@ -56,7 +56,11 @@ sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/mast
 ```
 Address Capitalization Randomization
 ```
-sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/use-caps-for-id.conf
+sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/caps-for-id.conf
+```
+Deny ANY Requests
+```
+sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/deny-any.conf
 ```
 Hardening (Recommended)
 ```
