@@ -102,6 +102,10 @@ Rate Limiting
 ```
 sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/rate-limiting.conf
 ```
+Remote Control
+```   
+sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/remote-control.conf
+```
 Root Hints
 ```
 sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/root-hints.conf
@@ -117,14 +121,6 @@ sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/mast
 Server Identity
 ```
 sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/server-identity.conf
-```
-Unbound Control
-```
-sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/unbound-control.conf
-```
-Extended Statistics
-```
-sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/unbound-control-extended-statistics.conf
 ```
 Verbosity (Recommended)
 ```
