@@ -62,6 +62,10 @@ Deny ANY Requests
 ```
 sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/deny-any.conf
 ```
+Fetch Policy
+```
+sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/fetch-policy.conf
+```
 Hardening (Recommended)
 ```
 sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/hardening.conf
