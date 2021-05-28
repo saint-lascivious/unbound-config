@@ -62,6 +62,10 @@ Deny ANY Requests
 ```
 sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/deny-any.conf
 ```
+Fast Servers
+```
+sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/fast-server.conf
+```
 Fetch Policy
 ```
 sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/fetch-policy.conf
