@@ -9,13 +9,6 @@ found at [nlnetlabs.nl/documentation/unbound/howto-optimise](https://nlnetlabs.n
 specifically regarding optimising unbound
 
 ## Usage
-* Install dependencies
-[unbound](https://packages.debian.org/buster/unbound)
-[libevent-dev](https://packages.debian.org/buster/libevent-dev)
-```
-apt-get install unbound libevent-dev
-```
-
 * Backup existing environment files
 ```
 cd ~
@@ -105,6 +98,12 @@ sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/mast
 Rate Limiting
 ```
 sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/rate-limiting.conf
+```
+Redis Cache DB
+Note: Unbound must be compiled with both --with-libhiredis and --enable-cachedb flags enabled.
+Check if your version supports this with 'unbound -V', it probably doesn't.
+```
+sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/redis.conf
 ```
 Remote Control
 ```   
