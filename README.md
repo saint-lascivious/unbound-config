@@ -136,6 +136,31 @@ After any changes to the server configuration the server must be restarted
 sudo service unbound restart
 ```
 
+## Source Compiled Unbound Binaries
+
+* What are they?
+I have compiled Unbound (and its associated toolset) from [source](https://github.com/NLnetLabs/unbound), with some additional features which may not be present in some distribution packages.
+
+Output from "unbound -V":
+```
+Version 1.13.2
+
+Configure line: --build=aarch64-linux-gnu --prefix=/usr --includedir=${prefix}/include --mandir=${prefix}/share/man --infodir=${prefix}/share/info --sysconfdir=/etc --localstatedir=/var --disable-option-checking --disable-silent-rules --libdir=${prefix}/lib/aarch64-linux-gnu --libexecdir=${prefix}/lib/aarch64-linux-gnu --disable-maintainer-mode --disable-dependency-tracking --disable-rpath --with-pidfile=/run/unbound.pid --with-rootkey-file=/var/lib/unbound/root.key --with-libevent --with-pythonmodule --enable-subnet --enable-dnstap --enable-systemd --with-chroot-dir= --with-dnstap-socket-path=/run/dnstap.sock --libdir=/usr/lib --disable-flto --enable-tfo-client --enable-tfo-server --with-libhiredis --enable-cachedb
+Linked libs: libevent 2.1.12-stable (it uses epoll), OpenSSL 1.1.1j  16 Feb 2021
+Linked modules: dns64 python cachedb subnetcache respip validator iterator
+TCP Fastopen feature available
+```
+This is (very deliberately) almost identical to the Debian/Ubuntu unbound binary package configuration.
+
+It is safe, but not necessarily recommended to replace the system unbound binaries with those provided.
+Any updates to the system package will remove the custom binary.
+
+* What do they run on?
+At the present at least, only aarch64 binaries are provided.
+
+* Will you continue to update these binaries?
+Probably, yes.
+
 ## Contact
 * Discord
 [SaintLascivious](https://discord.gg/9Cq4gRg)
