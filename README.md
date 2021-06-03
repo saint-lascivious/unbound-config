@@ -79,6 +79,10 @@ Local Records
 ```
 sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/local-records.conf
 ```
+Module Config
+```
+sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/module-config.conf
+```
 Multithreaded UDP
 ```
 sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/multithreaded-udp.conf
@@ -99,7 +103,7 @@ Rate Limiting
 ```
 sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/rate-limiting.conf
 ```
-Redis Cache DB
+Redis Cache DB (Requires [module-config.conf](ttps://raw.githubusercontent.com/saint-lascivious/unbound-config/master/module-config.conf))
 Note: Unbound must be compiled with both --with-libhiredis and --enable-cachedb flags enabled.
 Check if your version supports this with 'unbound -V', it probably doesn't.
 ```
