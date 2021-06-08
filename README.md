@@ -26,6 +26,7 @@ sudo rm pi-hole.conf
 ```
 
 * Download the base config:
+Base
 ```
 sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/base.conf
 ```
@@ -54,6 +55,10 @@ sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/mast
 Deny ANY Requests
 ```
 sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/deny-any.conf
+```
+DNS64 (Requires NAT64 Gateway)
+```
+sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/dns64.conf
 ```
 Fast Servers
 ```
@@ -91,7 +96,7 @@ Multithreading
 ```
 sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/multithreading.conf
 ```
-Cache Prefetch (Recommended)
+Prefetch (Recommended)
 ```
 sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/prefetch.conf
 ```
