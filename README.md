@@ -60,6 +60,10 @@ DNS64 (Requires NAT64 Gateway)
 ```
 sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/dns64.conf
 ```
+EDNS Buffer
+```
+sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/edns-buffer.conf
+```
 Fast Servers
 ```
 sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/fast-server.conf
@@ -121,10 +125,6 @@ sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/mast
 Root Hints
 ```
 sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/root-hints.conf
-```
-Safe EDNS Buffer (Reccomended)
-```
-sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/safe-edns-buffer.conf
 ```
 Serve Expired Records
 ```
