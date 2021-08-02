@@ -119,6 +119,7 @@ sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/mast
 Redis Cache DB
 
 Note: Requires [module-config.conf](https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/module-config.conf))
+
 Note: Unbound must be compiled with both --with-libhiredis and --enable-cachedb flags enabled.
 Check if your version supports this with 'unbound -V', it probably doesn't (but [mine do](https://github.com/saint-lascivious/unbound-config/tree/master/binaries)).
 ```
