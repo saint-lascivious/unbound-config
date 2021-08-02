@@ -83,6 +83,7 @@ IPv6
 sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/ipv6.conf
 ```
 Libevent
+
 Note: Requires installation of libevent-dev on the Unbound host
 ```
 sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/libevent.conf
@@ -116,6 +117,7 @@ Rate Limiting
 sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/rate-limiting.conf
 ```
 Redis Cache DB
+
 Note: Requires [module-config.conf](https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/module-config.conf))
 Note: Unbound must be compiled with both --with-libhiredis and --enable-cachedb flags enabled.
 Check if your version supports this with 'unbound -V', it probably doesn't (but [mine do](https://github.com/saint-lascivious/unbound-config/tree/master/binaries)).
@@ -123,6 +125,7 @@ Check if your version supports this with 'unbound -V', it probably doesn't (but 
 sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/redis.conf
 ```
 Remote Control
+
 Note: Remember to run unbound-control-setup on the Unbound host before trying to use unbound-control
 ```   
 sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/remote-control.conf
