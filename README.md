@@ -86,6 +86,9 @@ Libevent
 
 Note: Requires installation of libevent-dev on the Unbound host
 ```
+sudo apt install libevent-dev
+```
+```
 sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/libevent.conf
 ```
 Local Records
@@ -161,12 +164,15 @@ I have compiled Unbound (and its associated toolset) from [source](https://githu
 
 Output from "unbound -V":
 ```
-Version 1.13.2
+Version 1.13.3
 
 Configure line: --build=aarch64-linux-gnu --prefix=/usr --includedir=${prefix}/include --mandir=${prefix}/share/man --infodir=${prefix}/share/info --sysconfdir=/etc --localstatedir=/var --disable-option-checking --disable-silent-rules --libdir=${prefix}/lib/aarch64-linux-gnu --libexecdir=${prefix}/lib/aarch64-linux-gnu --disable-maintainer-mode --disable-dependency-tracking --disable-rpath --with-pidfile=/run/unbound.pid --with-rootkey-file=/var/lib/unbound/root.key --with-libevent --with-pythonmodule --enable-subnet --enable-dnstap --enable-systemd --with-chroot-dir= --with-dnstap-socket-path=/run/dnstap.sock --libdir=/usr/lib --disable-flto --enable-tfo-client --enable-tfo-server --with-libhiredis --enable-cachedb
 Linked libs: libevent 2.1.12-stable (it uses epoll), OpenSSL 1.1.1j  16 Feb 2021
 Linked modules: dns64 python cachedb subnetcache respip validator iterator
 TCP Fastopen feature available
+
+BSD licensed, see LICENSE in source package for details.
+Report bugs to unbound-bugs@nlnetlabs.nl or https://github.com/NLnetLabs/unbound/issues
 ```
 This is (very deliberately) almost identical to the Debian/Ubuntu unbound binary package configuration.
 
@@ -178,6 +184,30 @@ At the present at least, only aarch64 binaries are provided.
 
 * Will you continue to update these binaries?
 Probably, yes.
+
+* Install
+
+Ensure unbound is installed using the system package (we'll use its init scripts and dependencies)
+```
+sudo apt install unbound
+```
+
+* Download and install updated unbound binaries
+```
+wget https://github.com/saint-lascivious/unbound-config/raw/master/binaries/aarch64/unbound-1.13.3.tar.gz
+```
+```
+tar xf unbound-1.13.3.tar.gz
+```
+```
+cd unbound-1.13.3
+```
+```
+sudo chmod +x install
+```
+```
+./install
+```
 
 ## Contact
 * Discord
