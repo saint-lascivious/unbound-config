@@ -92,6 +92,8 @@ sudo apt install libevent-dev
 sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/libevent.conf
 ```
 Local Records
+
+Note: Example Only - Must be edited, contains deliberately garbage values
 ```
 sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/local-records.conf
 ```
