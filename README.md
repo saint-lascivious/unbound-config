@@ -203,7 +203,7 @@ wget https://github.com/saint-lascivious/unbound-config/raw/master/binaries/aarc
 tar xf unbound-1.13.3.tar.gz
 ```
 ```
-sudo chmod +x install
+chmod +x install
 ```
 ```
 ./install
