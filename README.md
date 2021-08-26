@@ -59,6 +59,8 @@ Deny ANY Requests
 sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/deny-any.conf
 ```
 DNS64 (Requires NAT64 Gateway)
+
+Note: You probably don't have a NAT64 Gateway
 ```
 sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/dns64.conf
 ```
@@ -127,6 +129,27 @@ Note: Requires [module-config.conf](https://raw.githubusercontent.com/saint-lasc
 
 Note: Unbound must be compiled with both --with-libhiredis and --enable-cachedb flags enabled.
 Check if your version supports this with 'unbound -V', it probably doesn't (but [mine do](https://github.com/saint-lascivious/unbound-config/tree/master/binaries)).
+```
+sudo apt install redis-server
+```
+```
+file=/etc/redis/redis.conf
+sudo sed -i '/databases 16/s/^/#/g' $file
+sudo sed -i '/#databases 16/a databases 1' $file
+sudo sed -i '/always-show-logo yes/s/^/#/g' $file
+sudo sed -i '/#always-show-logo yes/a always-show-logo no' $file
+sudo sed -i '/stop-writes-on-bgsave-error yes/s/^/#/g' $file
+sudo sed -i '/#stop-writes-on-bgsave-error yes/a stop-writes-on-bgsave-error no' $file
+sudo sed -i '/rdbcompression yes/s/^/#/g' $file
+sudo sed -i '/#rdbcompression yes/a rdbcompression no' $file
+sudo sed -i '/# maxmemory <bytes>/a maxmemory 16M' $file
+sudo sed -i '/# maxmemory-policy noeviction/a maxmemory-policy allkeys-lru' $file
+sudo sed -i '/slowlog-max-len 128/s/^/#/g' $file
+sudo sed -i '/#slowlog-max-len 128/a slowlog-max-len 16' $file
+```
+```
+sudo systemctl restart redis
+```
 ```
 sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/redis.conf
 ```
