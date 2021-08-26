@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+
+# install
+
+
+export LC_ALL=C
+
+# root check
+root_check() {
+        if [[ ! $EUID -eq 0 ]];then
+                if [[ -x "$(command -v sudo)" ]]; then
+                        exec sudo bash "$0" "$@"
+                        exit $?
+                else
+                        echo -e "\e[31;1m\t- please run install as root or install sudo\e[0m\n"
+                        exit 1
+                fi
+        fi
+}
+
+root_check
+
+
+# install binaries
+install_unbound() {
+        unbound_dir="/usr/sbin"
+        unbound_host_dir="/usr/bin"
+        echo -e "stopping unbound.service ..."
+        systemctl stop unbound.service
+        echo -e "\t- done\n"
+        echo -e "installing unbound ..."
+        cp unbound $unbound_dir
+        echo -e "\t- done\n"
+        echo -e "installing unbound-anchor ..."
+        cp unbound unbound-anchor $unbound_dir
+        echo -e "\t- done\n"
+        echo -e "installing unbound-checkconf ..."
+        cp unbound-checkconf $unbound_dir
+        echo -e "\t- done\n"
+        echo -e "installing unbound-control ..."
+        cp unbound-control $unbound_dir
+        echo -e "\t- done\n"
+        echo -e "installing unbound-control-setup ..."
+        cp unbound-control-setup $unbound_dir
+        echo -e "\t- done\n"
+        echo -e "installing unbound-host ..."
+        cp unbound-host $unbound_host_dir
+        echo -e "\t- done\n"
+        echo -e "starting unbound.service ..."
+        systemctl start unbound.service
+        echo -e "\t- done\n"
+        echo -e "the currently installed unbound binary version is ..."
+        unbound -V
+}
+
+install_unbound
