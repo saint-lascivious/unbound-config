@@ -19,6 +19,7 @@ root_check() {
 
 root_check
 
+# obnoxious header
 obnoxious_header() {
     echo -e "\e[31;1m _   _      _                      _   ___  _  _ ___   ___                      \e[0m"
     echo -e "\e[31;1m| | | |_ _ | |__  ___ _  _ _ _  __| | |   \| \| / __| / __| ___ _ ___ _____ _ _ \e[0m"
