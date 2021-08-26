@@ -225,7 +225,7 @@ cd /tmp
 wget https://github.com/saint-lascivious/unbound-config/raw/master/binaries/aarch64/unbound-1.13.3.tar.gz
 ```
 ```
-tar xf unbound-1.13.3.tar.gz
+tar -xf unbound-1.13.3.tar.gz
 ```
 ```
 chmod +x install
