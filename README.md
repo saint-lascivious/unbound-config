@@ -205,7 +205,7 @@ It is safe, but not necessarily recommended to replace the system unbound binari
 Any updates to the system package will remove the custom binary.
 
 * What do they run on?
-At the present at least, only aarch64 binaries are provided.
+At the present, aarch64 and armhf binaries are provided.
 
 * Will you continue to update these binaries?
 Probably, yes.
@@ -221,8 +221,13 @@ sudo apt install unbound
 ```
 cd /tmp
 ```
+For aarch64 hosts
 ```
 wget https://github.com/saint-lascivious/unbound-config/raw/master/binaries/aarch64/unbound-1.13.3.tar.gz
+```
+For armhf hosts
+```
+wget https://github.com/saint-lascivious/unbound-config/raw/master/binaries/armhf/unbound-1.13.3.tar.gz
 ```
 ```
 tar -xf unbound-1.13.3.tar.gz
