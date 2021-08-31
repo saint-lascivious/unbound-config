@@ -60,7 +60,7 @@ sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/mast
 ```
 DNS64 (Requires NAT64 Gateway)
 
-Note: You probably don't have a NAT64 Gateway
+Note: You probably don't have a NAT64 Gateway.
 ```
 sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/dns64.conf
 ```
@@ -84,9 +84,9 @@ IPv6
 ```
 sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/ipv6.conf
 ```
-Libevent
+Libevent (Recommended)
 
-Note: Requires installation of libevent-dev on the Unbound host
+Note: Requires installation of libevent-dev on the Unbound host.
 ```
 sudo apt install libevent-dev
 ```
@@ -95,7 +95,7 @@ sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/mast
 ```
 Local Records
 
-Note: Example Only - Must be edited, contains deliberately garbage values
+Note: Example Only - Must be edited, contains deliberately garbage values.
 ```
 sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/local-records.conf
 ```
@@ -107,7 +107,9 @@ Multithreaded UDP
 ```
 sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/multithreaded-udp.conf
 ```
-Multithreading
+Multithreading (Recommended)
+
+Note: For multi-core machines number of threads equals number of cores is a good rule, should be a factor of two.
 ```
 sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/multithreading.conf
 ```
@@ -125,13 +127,15 @@ sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/mast
 ```
 Redis Cache DB
 
-Note: Requires [module-config.conf](https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/module-config.conf))
+Note: Requires [module-config.conf](https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/module-config.conf)).
 
 Note: Unbound must be compiled with both --with-libhiredis and --enable-cachedb flags enabled.
 Check if your version supports this with 'unbound -V', it probably doesn't (but [mine do](https://github.com/saint-lascivious/unbound-config/tree/master/binaries)).
 ```
 sudo apt install redis-server
 ```
+
+Note: Configure a single memory limited Redis database with an least recently used eviction policy.
 ```
 file=/etc/redis/redis.conf
 sudo sed -i '/databases 16/s/^/#/g' $file
@@ -155,7 +159,7 @@ sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/mast
 ```
 Remote Control
 
-Note: Remember to run unbound-control-setup on the Unbound host before trying to use unbound-control
+Note: Remember to run unbound-control-setup on the Unbound host before trying to use unbound-control.
 ```   
 sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/remote-control.conf
 ```
