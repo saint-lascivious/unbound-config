@@ -5,7 +5,7 @@ configuration files for [unbound](https://nlnetlabs.nl/projects/unbound/about/) 
 Settings and values have been derived in part by some suggested
 defaults in [docs.pi-hole.net/guides/unbound](https://docs.pi-hole.net/guides/unbound/) in order to avoid
 some possible interoperability issues and also from the documentation
-found at [nlnetlabs.nl/documentation/unbound/howto-optimise](https://nlnetlabs.nl/documentation/unbound/howto-optimise/) 
+found at [nlnetlabs.nl/documentation/unbound/howto-optimise](https://nlnetlabs.nl/documentation/unbound/howto-optimise/)
 specifically regarding optimising unbound
 
 ## Usage
@@ -37,6 +37,10 @@ sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/mast
 Access Control
 ```
 sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/access-control.conf
+```
+Automatic Interface
+```
+sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/auto-interface.conf
 ```
 Buffers (Recommended)
 ```
@@ -146,10 +150,11 @@ sudo sed -i '/stop-writes-on-bgsave-error yes/s/^/#/g' $file
 sudo sed -i '/#stop-writes-on-bgsave-error yes/a stop-writes-on-bgsave-error no' $file
 sudo sed -i '/rdbcompression yes/s/^/#/g' $file
 sudo sed -i '/#rdbcompression yes/a rdbcompression no' $file
-sudo sed -i '/# maxmemory <bytes>/a maxmemory 16M' $file
+sudo sed -i '/# maxmemory <bytes>/a maxmemory 8M' $file
 sudo sed -i '/# maxmemory-policy noeviction/a maxmemory-policy allkeys-lru' $file
 sudo sed -i '/slowlog-max-len 128/s/^/#/g' $file
 sudo sed -i '/#slowlog-max-len 128/a slowlog-max-len 16' $file
+sudo sed -i '/logfile \/var\/log\/redis\/redis-server.log/s/^/#/g' $file
 ```
 ```
 sudo systemctl restart redis
@@ -160,7 +165,7 @@ sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/mast
 Remote Control
 
 Note: Remember to run unbound-control-setup on the Unbound host before trying to use unbound-control.
-```   
+```
 sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/remote-control.conf
 ```
 Root Hints
@@ -189,15 +194,16 @@ sudo service unbound restart
 ## Source Compiled Unbound Binaries
 
 * What are they?
-I have compiled Unbound (and its associated toolset) from [source](https://github.com/NLnetLabs/unbound), with some additional features which may not be present in some distribution packages.
+I have compiled Unbound (and its associated toolset) from [source](https://github.com/NLnetLabs/unbound), with some additional features which may not be present in some distribution packages (cachedb, DNSCrypt, TFO).
 
-Output from "unbound -V":
+Example output from "unbound -V" (aarch64 version):
 ```
 Version 1.13.3
 
-Configure line: --build=aarch64-linux-gnu --prefix=/usr --includedir=${prefix}/include --mandir=${prefix}/share/man --infodir=${prefix}/share/info --sysconfdir=/etc --localstatedir=/var --disable-option-checking --disable-silent-rules --libdir=${prefix}/lib/aarch64-linux-gnu --libexecdir=${prefix}/lib/aarch64-linux-gnu --disable-maintainer-mode --disable-dependency-tracking --disable-rpath --with-pidfile=/run/unbound.pid --with-rootkey-file=/var/lib/unbound/root.key --with-libevent --with-pythonmodule --enable-subnet --enable-dnstap --enable-systemd --with-chroot-dir= --with-dnstap-socket-path=/run/dnstap.sock --libdir=/usr/lib --disable-flto --enable-tfo-client --enable-tfo-server --with-libhiredis --enable-cachedb
+Configure line: --build=aarch64-linux-gnu --prefix=/usr --includedir=${prefix}/include --mandir=${prefix}/share/man --infodir=${prefix}/share/info --sysconfdir=/etc --localstatedir=/var --disable-option-checking --disable-silent-rules --libdir=${prefix}/lib/aarch64-linux-gnu --libexecdir=${prefix}/lib/aarch64-linux-gnu --disable-maintainer-mode --disable-dependency-tracking --disable-rpath --with-pidfile=/run/unbound.pid --with-rootkey-file=/var/lib/unbound/root.key --with-libevent --with-pythonmodule --enable-subnet --enable-dnstap --enable-systemd --with-chroot-dir= --with-dnstap-socket-path=/run/dnstap.sock --libdir=/usr/lib --disable-flto --enable-cachedb --enable-dnscrypt --enable-tfo-client --enable-tfo-server --with-libhiredis
 Linked libs: libevent 2.1.12-stable (it uses epoll), OpenSSL 1.1.1j  16 Feb 2021
 Linked modules: dns64 python cachedb subnetcache respip validator iterator
+DNSCrypt feature available
 TCP Fastopen feature available
 
 BSD licensed, see LICENSE in source package for details.
