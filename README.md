@@ -251,10 +251,10 @@ chmod +x install
 
 ## Contact
 * Discord
-[SaintLascivious](https://discord.gg/9Cq4gRg)
+[SaintLascivious](https://discord.gg/NC7taVyn)
 
 * Email
-saint.lascivious@gmail.com
+saint@sainternet.xyz
 
 * IRC
 [##saint-lascivious](https://webchat.freenode.net/##saint-lascivious)
