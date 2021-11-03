@@ -227,7 +227,7 @@ Ensure unbound is installed using the system package (we'll use its init scripts
 sudo apt install unbound
 ```
 
-* Download and install updated unbound binaries
+* Download and install unbound-config unbound binaries
 ```
 cd /tmp
 ```
@@ -243,10 +243,24 @@ wget https://github.com/saint-lascivious/unbound-config/raw/master/binaries/armh
 tar -xf unbound-1.13.3.tar.gz
 ```
 ```
-chmod +x install
+chmod +x unbound-config
 ```
 ```
-./install
+./unbound-config --install
+```
+
+Uninstall unbound-config unbound binaries
+```
+cd /tmp
+```
+```
+wget https://github.com/saint-lascivious/unbound-config/raw/master/binaries/unbound-config
+```
+```
+chmod +x unbound-config
+```
+```
+./unbound-config --uninstall
 ```
 
 ## Contact
