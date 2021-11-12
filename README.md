@@ -252,7 +252,7 @@ tar -xf unbound-1.13.3.tar.gz
 chmod +x unbound-config
 ```
 ```
-./unbound-config --install
+./unbound-config --install-binaries
 ```
 
 Uninstall unbound-config unbound binaries
@@ -266,7 +266,7 @@ wget https://github.com/saint-lascivious/unbound-config/raw/master/binaries/unbo
 chmod +x unbound-config
 ```
 ```
-./unbound-config --uninstall
+./unbound-config --uninstall-binaries
 ```
 
 ## Additional Features
