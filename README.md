@@ -43,6 +43,8 @@ Automatic Interface
 sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/auto-interface.conf
 ```
 Buffers (Recommended)
+
+Note: See notes on additional system configuration below.
 ```
 sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/buffers.conf
 ```
@@ -131,10 +133,11 @@ sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/mast
 ```
 Redis Cache DB
 
-Note: Requires [module-config.conf](https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/module-config.conf)).
+Notes: Requires [module-config.conf](https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/module-config.conf)).
 
-Note: Unbound must be compiled with both --with-libhiredis and --enable-cachedb flags enabled.
-Check if your version supports this with 'unbound -V', it probably doesn't (but [mine do](https://github.com/saint-lascivious/unbound-config/tree/master/binaries)).
+Unbound must be compiled with both --with-libhiredis and --enable-cachedb flags enabled. Check if your version supports this with 'unbound -V', it probably doesn't (but [mine do](https://github.com/saint-lascivious/unbound-config/tree/master/binaries)).
+
+See notes on additional system configuration below.
 ```
 sudo apt install redis-server
 ```
@@ -199,9 +202,9 @@ I have compiled Unbound (and its associated toolset) from [source](https://githu
 
 Example output from "unbound -V" (aarch64 version):
 ```
-Version 1.13.3+1a94a68
+Version 1.13.3
 
-Configure line: --build=aarch64-linux-gnu --prefix=/usr --includedir=${prefix}/include --mandir=${prefix}/share/man --infodir=${prefix}/share/info --sysconfdir=/etc --localstatedir=/var --disable-option-checking --disable-silent-rules --libdir=${prefix}/lib/aarch64-linux-gnu --libexecdir=${prefix}/lib/aarch64-linux-gnu --disable-maintainer-mode --disable-dependency-tracking --disable-rpath --with-pidfile=/run/unbound.pid --with-rootkey-file=/var/lib/unbound/root.key --with-libevent --with-pythonmodule --enable-subnet --enable-dnstap --enable-systemd --with-chroot-dir= --with-dnstap-socket-path=/run/dnstap.sock --libdir=/usr/lib --disable-flto --enable-cachedb --enable-dnscrypt --enable-dnstap --enable-ipsecmod --enable-ipset --enable-tfo-client --enable-tfo-server --with-libhiredis --with-libnghttp2
+Configure line: --build=aarch64-linux-gnu --prefix=/usr --includedir=${prefix}/include --mandir=${prefix}/share/man --infodir=${prefix}/share/info --sysconfdir=/etc --localstatedir=/var --disable-option-checking --disable-silent-rules --libdir=${prefix}/lib/aarch64-linux-gnu --libexecdir=${prefix}/lib/aarch64-linux-gnu --disable-maintainer-mode --disable-dependency-tracking --disable-rpath --with-pidfile=/run/unbound.pid --with-rootkey-file=/var/lib/unbound/root.key --with-libevent --with-pythonmodule --enable-subnet --enable-dnstap --enable-systemd --with-chroot-dir= --with-dnstap-socket-path=/run/dnstap.sock --libdir=/usr/lib --disable-flto --enable-cachedb --enable-dnscrypt --enable-ipsecmod --enable-ipset --enable-tfo-client --enable-tfo-server --with-libhiredis --with-libnghttp2
 Linked libs: libevent 2.1.12-stable (it uses epoll), OpenSSL 1.1.1j  16 Feb 2021
 Linked modules: dns64 python cachedb ipsecmod subnetcache ipset respip validator iterator
 DNSCrypt feature available
@@ -217,7 +220,7 @@ Any updates to the system package will remove the custom binary.
 
 * What do they run on?
 
-At the present, aarch64 and armhf binaries are provided.
+At the present, aarch64 and armhf/armv7l binaries are provided.
 
 * Will you continue to update these binaries?
 
@@ -234,11 +237,11 @@ sudo apt install unbound
 ```
 cd /tmp
 ```
-For aarch64 hosts
+For aarch64 compatible hosts
 ```
 wget https://github.com/saint-lascivious/unbound-config/raw/master/binaries/aarch64/unbound-1.13.3.tar.gz
 ```
-For armhf hosts
+For armhf compatible hosts
 ```
 wget https://github.com/saint-lascivious/unbound-config/raw/master/binaries/armhf/unbound-1.13.3.tar.gz
 ```
@@ -264,6 +267,92 @@ chmod +x unbound-config
 ```
 ```
 ./unbound-config --uninstall
+```
+
+## Additional Features
+A number of additional features are available via the unbound-config script.
+
+The full --help text for unbound-config is as follows:
+```
+Usage: unbound-control OPTION
+
+Where OPTION is one of
+
+    -b                      Backup the current Unbound configuration to a
+    backup                  .tar.gz archive located within
+    --backup-config         /etc/unbound/unbound.conf.d-backup
+                            The backup ID naming convention is YYYYMMDDHHMM
+
+    -c                      Make a backup of the current Unbound configuration,
+    config-recommended      remove the current Unbound configuration, and
+    --config-recommended    install unbound-config base config and additional
+                            recommended config fragments
+
+    -d                      Download unbound-config Unbound binaries in a
+    download                .tar.gz archive to /tmp
+    --download-binaries
+
+    -D                      Delete all Unbound configuration backups that
+    delete                  unbound-config --backup has made
+    --delete-backups
+
+    -h                      Displays this help dialogue
+    help
+    --help
+
+    -i                      Install unbound-config unbound binaries:
+    install                 unbound, unbound-anchor, unbound-checkconf,
+    --install-binaries      unbound-control, unbound-control-setup, unbound-host
+
+    -l                      List possible backup IDs found in
+    list-backups            $unbound_config_dir-backup
+    --list-backups          Useful for getting backup IDs for --restore-backup
+
+    -r                      Remove the current Unbound configuration
+    remove-config  
+    --remove-config
+
+    -R ID                   Restore a backup of your Unbound configuration to
+    restore-backup ID       the Unbound configuration directory
+    --restore-backup ID     Use --list-backups to list possible backup IDs
+
+    -u                      Uninstall unbound-config unbound binaries 
+    uninstall
+    --uninstall-binaries
+
+    -v                      Displays the unbound-config version
+    version
+    --version
+```
+
+## Notes On Additional System Configuration
+* TCP Fast Open
+If your kernel supports it, you may want to add the following the following to /etc/sysctl.conf or /etc/sysctl.d/99-tcp-fastopen.conf (you will need to create this file) and restarting the machine.
+```
+net.ipv4.tcp_fastopen=3
+```
+
+* Large Buffers
+Large buffer values may print a warning about insufficient net.core memory values.
+
+You can address this adding the following to /etc/sysctl.conf or /etc/sysctl.d/99-net-core-mem.conf (you will need to create this file) and restarting the machine.
+```
+net.core.rmem_default=2097152
+net.core.wmem_default=2097152
+net.core.rmem_max=4104304
+net.core.wmem_max=4194304
+```
+
+* Redis CacheDB
+If using Redis and the cachedb module, you may want the following to /etc/sysctl.conf or /etc/sysctl.d/99-overcommit-memory.conf (you will need to create this file) and restarting the machine.
+```
+vm.overcommit_memory=1
+```
+The names of the files used for `/etc/sysctl.d/` are descriptive for your reference but can be arbitrary.
+
+Any of these flags can also be enabled without restarting by using
+```
+sudo sysctl FLAG=VALUE
 ```
 
 ## Contact
