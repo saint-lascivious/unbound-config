@@ -3,14 +3,15 @@
 export LC_ALL=C
 
 # unbound-config version
-version="0.9"
+version="0.9.1"
 
-# Current major Unbound version
+# Current major unbound-config Unbound binary version
 unbound_version="1.13.3"
 
 # More Unbound vars
 unbound_dir="/usr/sbin"
 unbound_config_dir="/etc/unbound/unbound.conf.d"
+# Bizarrely not the same path as any other unbound-* binary
 unbound_host_dir="/usr/bin"
 
 # Assume a posix /tmp exists
@@ -37,24 +38,35 @@ obnoxious_header() {
 # fair bit of reordering, refactoring, and reduction
 # Some functions are fairly modular, others probably should be more so
 
-# Basic user confirmation helper
+# Whiptail dialog box proportions
+height="10"
+width="80"
+
+# User confirmation handler using whiptail
 confirm_action() {
-echo -e "This command will $user_action"
-echo -e "Enter y or yes to proceed, or any other key to exit\n"
-echo -e "Are you sure you want to:"
-read -r -p "$user_action? [y/N] " user_input
-case "$user_input" in
-    [yY][eE][sS]|[yY])
-        # The user seems to understand what they are doing, so do it
-        echo -e "\t- Proceeding\n"
-        ;;
-    *)
-        # We required explicit confirmation and we did not get it
-        # There's nothing more to do here
-        echo -e "\t- Exiting\n"
-        exit 0
-        ;;
-esac
+    package="whiptail"
+    test_package
+    whiptail --title "$title" --backtitle "unbound-config v$version" --yesno --defaultno "Are you sure you want to $action?" $height $width
+    response=$?
+    case $response in
+        0 )
+            ;;
+        1 )
+            # We required explicit confirmation and we didn't get it
+            echo -e "Exiting unbound-config"
+            exit 0 ;;
+        255 )
+            # Abandon ship
+            echo -e "Escape key was pressed"
+            exit 1 ;;
+    esac
+}
+
+# Much like confirm_action, but for general messages that need to be seen
+message_box() {
+    package="whiptail"
+    test_package
+    whiptail --title "$title" --backtitle "unbound-config v$version" --msgbox "$message" $height $width
 }
 
 # Backup the current Unbound configuration if it exists
@@ -99,12 +111,11 @@ if [[ -d "$unbound_config_dir" ]]; then
 fi
 }
 
-# Remove the current Unbound configuration if it exists and we think there is
-# at least one backup in the backup directory
+# Offer to remove the current Unbound configuration if it exists but force
+# a backup flow in order to do it
 remove_config() {
     obnoxious_header
-    # This should be guarded well enough so as to not need explicit user
-    # confirmation
+    action="remove Unbound's current configuration"
     if [[ -d "$unbound_config_dir-backup" ]]; then
         # A backup directory exists, check if there are any archives
         if [[ "$(ls -A $unbound_config_dir-backup/*.tar.gz)" ]]; then
@@ -113,7 +124,7 @@ remove_config() {
                 # An Unbound configuration directory exists
                 if [[ "$(ls -A $unbound_config_dir)" ]]; then
                     # A config probably exists
-                    user_action="remove the Unbound configuration"
+                    title="This command will $action"
                     confirm_action
                     echo -e "Removing current Unbound configuration ..."
                     # It's probably safe to clear the configuration directory
@@ -131,34 +142,35 @@ remove_config() {
                 echo -e "No Unbound configuration directory found at"
                 echo -e "$unbound_config_dir"
                 echo -e "\nCannot remove Unbound configuration, no configuration directory"
-                exit 0
             fi
         else
             # A backup directory exists but no archives exist within it
-            # refusing to clear the current configuration
-            echo -e "No backup Unbound configuration found in"
-            echo -e "$unbound_config_dir-backup"
-            echo -e "\nRefusing to remove the current configuration, no backup exists"
-            exit 0
+            title="A backup is required to $action"
+            action="make a backup now"
+            confirm_action
+            backup_config
+            remove_config
         fi
     else
         # No Unbound configuration backup directory exists
-        # refusing to clear the current configuration
-        echo -e "No Unbound configuration backup directory found at"
-        echo -e "$unbound_config_dir-backup"
-        echo -e "\nRefusing to remove the current configuration, no backup exists"
-        exit 0
+        title="A backup is required to $action"
+        action="make a backup now"
+        confirm_action
+        backup_config
+        remove_config
     fi
 }
 
 delete_backups() {
+    obnoxious_header
     if [[ -d "$unbound_config_dir-backup" ]]; then
         # There's a backup directory present
         #confirm we really want to remove it
         if [[ "$(ls -A $unbound_config_dir-backup)" ]]; then
             # The backup Unbound configuration backup directory is populated
             # Confirm we really want to do this
-            user_action="remove all Unbound configuration backups"
+            action="remove all Unbound configuration backups"
+            title="This command will $action"
             confirm_action
             echo -e "Removing Unbound configuration backup directory ..."
             rm -fr $unbound_config_dir-backup
@@ -232,6 +244,9 @@ restore_backup() {
                 # Test for tar before we try use it
                 package="tar"
                 test_package
+                action="restore a backup with ID $backup_id"
+                title="This command will $action"
+                confirm_action
                 echo -e "Removing current Unbound configuration if any exists..."
                 # If we are restoring a backup, first nuke any current config
                 rm -fr $unbound_config_dir/*
@@ -261,7 +276,7 @@ restore_backup() {
 }
 
 show_version() {
-    echo -e "unbound-config $version"
+    echo -e "unbound-config v$version"
 }
 
 # We all need a little help from time to time
@@ -275,14 +290,19 @@ Where OPTION is one of
     --backup-config         $unbound_config_dir-backup
                             The backup ID naming convention is YYYYMMDDHHMM
 
-    -c                      Make a backup of the current Unbound configuration,
-    config-recommended      remove the current Unbound configuration, and
-    --config-recommended    install unbound-config base config and additional
+    -c                      Make a backup of the current Unbound config directory
+    config-recommended      /etc/unbound/unbound.conf.d
+    --config-recommended    Remove the current Unbound configuration, and
+                            install unbound-config base config and additional
                             recommended config fragments
+
+                            Requires libevent-dev to be installed
 
     -d                      Download unbound-config Unbound binaries in a
     download                .tar.gz archive to $temp_dir
-    --download-binaries
+    --download-binaries     Takes the optional parameter --force to remove an
+                            existing binary package before downloading a new
+                            one
 
     -D                      Delete all Unbound configuration backups that
     delete                  unbound-config --backup has made
@@ -320,20 +340,20 @@ Where OPTION is one of
 # Extremely basic service handler function
 # What could go wrong here?
 service_handler() {
+    package="systemctl"
+    test_package
     echo -e "Sending systemctl $action to $service ..."
-#    systemctl $action $service
+    systemctl $action $service
     echo -e "\t- Done\n"
 }
 
-# Test if an arbitrary package is inatalled using dpkg output
+# The ugliest dependency check you'll ever see
 test_package() {
-package_query=$(dpkg-query -W --showformat='${Status}\n' $package|grep "install ok installed")
-echo -e "\nChecking if $package is installed on this system: $package_query"
-    if [ "" = "$package_query" ]; then
+    package_query=$(dpkg-query -W --showformat='${Status}\n' $package|grep "install ok installed")
+    if [[ "$package_query" == "" ]]; then
         echo -e "\e[31;1m$package is not installed\e[0m\n"
         echo -e "Install $package using your system package manager and then run this script again"
-    else
-        echo -e "\t- Done\n"
+        exit 1
     fi
 }
 
@@ -368,7 +388,10 @@ config_recommended() {
     # libevent is also required
     package="libevent-dev"
     test_package
-    user_action="install recommended unbound-config config fragments"
+    package="wget"
+    test_package
+    action="install recommended unbound-config config fragments"
+    title="This command will $action"
     confirm_action
     # Backup first
     backup_config
@@ -418,11 +441,26 @@ config_recommended() {
 # Download unbound-config .tar.gz packaged Unbound binaries
 download_binaries() {
     obnoxious_header
+    # Add a parameter to allow forcing download of an unbound binary package
+    # even if a current one already exists in the target directory
+    if [[ "$2" == "--force" ]]; then
+        if [[ -f "$temp_dir/unbound-$unbound_version.tar.gz" ]]; then
+            rm $temp_dir/unbound-$unbound_version.tar.gz
+        fi
+    fi
     test_architecture
+    package="wget"
+    test_package
     # Use test_arch result to determine which package to download
     echo -e "Downloading unbound-config Unbound binaries for $host_arch ..."
+    # Only download if newer or nonexistent
     wget -c -nv -N https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/binaries/$host_arch/unbound-$unbound_version.tar.gz -P $temp_dir
-    echo -e "\t- Done"
+    echo -e "\t- Done\n"
+    echo -e "Extracting unbound-$unbound_version.tar.gz to $temp_dir ...\n"
+    tar -vzxf $temp_dir/unbound-$unbound_version.tar.gz -C $temp_dir
+    echo -e "\n\t- Done\n"
+    # Display the unbound-config version
+    $temp_dir/unbound-config --version
     exit 0
 }
 
@@ -431,38 +469,40 @@ install_unbound() {
     obnoxious_header
     # Seems counterintuitive I know
     # Use the system package manager's setup of Unbound
+    action="install unbound-config Unbound binaries"
+    title="Before you $action"
+    message="It is safe, but not necessarily recommended to replace the system unbound binaries with those provided. Any updates to the system package will remove the custom binary."
+    message_box
     package="unbound"
     test_package
     test_architecture
-    user_action="install unbound-config Unbound binaries"
+    title="This command will $action"
     confirm_action
     echo -e "Stopping Unbound ..."
     action="stop"
     service="unbound"
     service_handler
-    echo -e "\t- Done\n"
     echo -e "Installing unbound ..."
-    cp unbound $unbound_dir
+    cp $temp_dir/unbound $unbound_dir
     echo -e "\t- Done\n"
     echo -e "Installing unbound-anchor ..."
-    cp unbound-anchor $unbound_dir
+    cp $temp_dir/unbound-anchor $unbound_dir
     echo -e "\t- Done\n"
     echo -e "Installing unbound-checkconf ..."
-    cp unbound-checkconf $unbound_dir
+    cp $temp_dir/unbound-checkconf $unbound_dir
     echo -e "\t- Done\n"
     echo -e "Installing unbound-control ..."
-    cp unbound-control $unbound_dir
+    cp $temp_dir/unbound-control $unbound_dir
     echo -e "\t- Done\n"
     echo -e "Installing unbound-control-setup ..."
-    cp unbound-control-setup $unbound_dir
+    cp $temp_dir/unbound-control-setup $unbound_dir
     echo -e "\t- Done\n"
     echo -e "Installing unbound-host ..."
-    cp unbound-host $unbound_host_dir
+    cp $temp_dir/unbound-host $unbound_host_dir
     echo -e "\t- Done\n"
     echo -e "Starting Unbound ..."
     action="start"
     service_handler
-    echo -e "\t- Done\n"
 }
 
 # Uninstall unbound-config Unbound binaries
@@ -470,7 +510,8 @@ uninstall_unbound() {
     obnoxious_header
     package="unbound"
     test_package
-    user_action="uninstall unbound-config Unbound binaries"
+    action="uninstall unbound-config Unbound binaries"
+    title="This command will $action"
     confirm_action
     echo -e "Stopping Unbound ..."
     action="stop"
@@ -517,7 +558,7 @@ fi
 case "${1}" in
     "-b" | "backup-config" | "--backup-config"                ) backup_config ;;
     "-c" | "config-recommended" | "--config-recommended"      ) config_recommended ;;
-    "-d" | "download" | "--download-binaries"                 ) download_binaries ;;
+    "-d" | "download" | "--download-binaries"                 ) download_binaries "$@" ;;
     "-D" | "delete" | "--delete-backups"                      ) delete_backups ;;
     "-h" | "help" | "--help"                                  ) help_function ;;
     "-i" | "install" | "--install-binaries"                   ) install_unbound ;;

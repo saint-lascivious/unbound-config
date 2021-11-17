@@ -283,14 +283,19 @@ Where OPTION is one of
     --backup-config         /etc/unbound/unbound.conf.d-backup
                             The backup ID naming convention is YYYYMMDDHHMM
 
-    -c                      Make a backup of the current Unbound configuration,
-    config-recommended      remove the current Unbound configuration, and
-    --config-recommended    install unbound-config base config and additional
+    -c                      Make a backup of the current Unbound config directory
+    config-recommended      /etc/unbound/unbound.conf.d
+    --config-recommended    Remove the current Unbound configuration, and
+                            install unbound-config base config and additional
                             recommended config fragments
+
+                            Requires libevent-dev to be installed
 
     -d                      Download unbound-config Unbound binaries in a
     download                .tar.gz archive to /tmp
-    --download-binaries
+    --download-binaries     Takes the optional parameter --force to remove an
+                            existing binary package before downloading a new
+                            one
 
     -D                      Delete all Unbound configuration backups that
     delete                  unbound-config --backup has made
@@ -309,14 +314,14 @@ Where OPTION is one of
     --list-backups          Useful for getting backup IDs for --restore-backup
 
     -r                      Remove the current Unbound configuration
-    remove-config  
+    remove-config
     --remove-config
 
     -R ID                   Restore a backup of your Unbound configuration to
     restore-backup ID       the Unbound configuration directory
     --restore-backup ID     Use --list-backups to list possible backup IDs
 
-    -u                      Uninstall unbound-config unbound binaries 
+    -u                      Uninstall unbound-config unbound binaries
     uninstall
     --uninstall-binaries
 
