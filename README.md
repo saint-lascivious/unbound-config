@@ -283,7 +283,7 @@ Where OPTION is one of
     --backup-config         /etc/unbound/unbound.conf.d-backup
                             The backup ID naming convention is YYYYMMDDHHMM
 
-    -c                      Make a backup of the current Unbound config directory
+    -c                      Make a backup of the Unbound configuration directory
     config-recommended      /etc/unbound/unbound.conf.d
     --config-recommended    Remove the current Unbound configuration, and
                             install unbound-config base config and additional
@@ -310,7 +310,7 @@ Where OPTION is one of
     --install-binaries      unbound-control, unbound-control-setup, unbound-host
 
     -l                      List possible backup IDs found in
-    list-backups            $unbound_config_dir-backup
+    list-backups            /etc/unbound/unbound.conf.d-backup
     --list-backups          Useful for getting backup IDs for --restore-backup
 
     -r                      Remove the current Unbound configuration
@@ -326,7 +326,7 @@ Where OPTION is one of
     --uninstall-binaries
 
     -v                      Displays the unbound-config version
-    version
+    version                 Current unbound-config version v0.9.2
     --version
 ```
 
