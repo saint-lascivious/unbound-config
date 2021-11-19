@@ -3,7 +3,7 @@
 export LC_ALL=C
 
 # unbound-config version
-version="0.9.3"
+version="0.9.4"
 
 # Current major unbound-config Unbound binary version
 unbound_version="1.13.3"
@@ -17,11 +17,9 @@ unbound_host_dir="/usr/bin"
 # Assume a posix /tmp exists
 temp_dir="/tmp"
 
-# We might use these in multiple places
-date_format="$(date +%Y%m%d%H%M)"
-host_arch="$(uname -m)"
-launch_dir="$(pwd)"
-test_cores="$(grep -c ^processor /proc/cpuinfo)"
+# Whiptail dialogue box proportions
+height="12"
+width="72"
 
 # if you know me, you know we have to have one
 obnoxious_header() {
@@ -35,12 +33,8 @@ obnoxious_header() {
 }
 
 # The following is mostly scattered around in no particular order and needs a
-# fair bit of reordering, refactoring, and reduction
+# fair bit of reordering, refactoring, and reduction - or to not exist
 # Some functions are fairly modular, others probably should be more so
-
-# Whiptail dialog box proportions
-height="12"
-width="72"
 
 # User confirmation handler using whiptail
 confirm_action() {
@@ -78,6 +72,9 @@ message_box() {
 # Backup the current Unbound configuration if it exists
 backup_config() {
     obnoxious_header
+    # Date format breaks down to YYYYMMDDHHMM
+    date_format="$(date +%Y%m%d%H%M)"
+    launch_dir="$(pwd)"
     if [[ -d "$unbound_config_dir" ]]; then
         # There is an Unbound config directory, try check if it is empty or not
         if [[ "$(ls -A $unbound_config_dir)" ]]; then
@@ -348,7 +345,7 @@ Where OPTION is one of
 # Extremely basic service handler function
 # What could go wrong here?
 service_handler() {
-    # A safer bet than assuming systemd will be present
+    # A slightly safer bet than assuming systemd will be present
     package="init-system-helpers"
     test_package
     echo -e "Sending $service_action action to $service ..."
@@ -358,17 +355,35 @@ service_handler() {
 
 # The ugliest dependency check you'll ever see
 test_package() {
-    package_query=$(dpkg-query -W --showformat='${Status}\n' $package|grep "install ok installed")
+    # We should probably be testing for dpkg-query too
+    # TODO:
+    #    - Better, distribution agnostic if possible, or at least safer
+    #      dependency checking
+    package_query="$(dpkg-query -W --showformat='${Status}\n' $package | grep "install ok installed")"
     if [[ "$package_query" == "" ]]; then
-        echo -e "\e[31;1m$package is not installed\e[0m\n"
-        echo -e "Install $package using your system package manager and then run this script again"
-        exit 1
+        package_to_install="$package"
+        test_apt="$(dpkg-query -W --showformat='${Status}\n' apt | grep "install ok installed")"
+        if [[ "$test_apt" != "" ]]; then
+            # We think we found apt
+            # Ask if we can use it to install what we need
+            action_text="install $package_to_install using apt now"
+            title_text="Required package $package_to_install not found"
+            confirm_action
+            # If we land here we got permission to install using apt
+            apt install --yes --no-install-recommends $package_to_install
+        else
+            # Let the user figure it out
+            echo -e "\e[31;1m$package_to_install is not installed\e[0m\n"
+            echo -e "Install $package_to_install using your system package manager and then run this script again"
+            exit 1
+        fi
     fi
 }
 
 test_architecture() {
     # I can't use uname -i here like I normally would because raspberrypi
     # devices may report unknown for this flag which is super helpful
+    host_arch="$(uname -m)"
     echo -e "Testing host architecture ..."
     if [[ "$host_arch" == "aarch64" ]]; then
         # Host can use aarch64 binaries
@@ -391,6 +406,7 @@ test_architecture() {
 # Install unbound-config recommended configuration fragments
 config_recommended() {
     obnoxious_header
+    test_cores="$(grep -c ^processor /proc/cpuinfo)"
     # Test if it even makes any sense to install this config
     package="unbound"
     test_package
