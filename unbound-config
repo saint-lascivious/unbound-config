@@ -3,7 +3,7 @@
 export LC_ALL=C
 
 # unbound-config version
-version="0.9.2"
+version="0.9.3"
 
 # Current major unbound-config Unbound binary version
 unbound_version="1.13.3"
@@ -348,10 +348,11 @@ Where OPTION is one of
 # Extremely basic service handler function
 # What could go wrong here?
 service_handler() {
-    package="systemctl"
+    # A safer bet than assuming systemd will be present
+    package="init-system-helpers"
     test_package
-    echo -e "Sending systemctl $service_action to $service ..."
-    systemctl $service_action $service
+    echo -e "Sending $service_action action to $service ..."
+    service $service $service_action
     echo -e "\t- Done\n"
 }
 
