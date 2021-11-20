@@ -3,7 +3,7 @@
 export LC_ALL=C
 
 # unbound-config version
-version="0.9.4"
+version="0.9.5"
 
 # Current major unbound-config Unbound binary version
 unbound_version="1.13.3"
@@ -221,7 +221,7 @@ list_backups() {
 
 restore_backup() {
     # The --restore-backup flag requires an argument
-    if [[ "$2" == "" ]]; then
+    if [[ ! -n "$2" ]]; then
         echo -e "This flag requires a backup ID"
         echo -e "Use --list-backups to list possible backup IDs\n"
         echo -e "Example: unbound-config --restore-backup 197001010000"
@@ -360,10 +360,10 @@ test_package() {
     #    - Better, distribution agnostic if possible, or at least safer
     #      dependency checking
     package_query="$(dpkg-query -W --showformat='${Status}\n' $package | grep "install ok installed")"
-    if [[ "$package_query" == "" ]]; then
+    if [[ ! -n "$package_query" ]]; then
         package_to_install="$package"
         test_apt="$(dpkg-query -W --showformat='${Status}\n' apt | grep "install ok installed")"
-        if [[ "$test_apt" != "" ]]; then
+        if [[ -n "$test_apt" ]]; then
             # We think we found apt
             # Ask if we can use it to install what we need
             action_text="install $package_to_install using apt now"
