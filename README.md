@@ -321,12 +321,16 @@ Where OPTION is one of
     restore-backup ID       the Unbound configuration directory
     --restore-backup ID     Use --list-backups to list possible backup IDs
 
+    -s                      Download and install the unbound-config script to
+    script                  local storage, or update an existing copy
+    --install-script
+
     -u                      Uninstall unbound-config unbound binaries
     uninstall
     --uninstall-binaries
 
     -v                      Displays the unbound-config version
-    version                 Current unbound-config version v0.9.2
+    version                 Current unbound-config version v0.9.6
     --version
 ```
 

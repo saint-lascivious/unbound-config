@@ -3,7 +3,7 @@
 export LC_ALL=C
 
 # unbound-config version
-version="0.9.5"
+version="0.9.6"
 
 # Current major unbound-config Unbound binary version
 unbound_version="1.13.3"
@@ -296,7 +296,7 @@ Where OPTION is one of
                             The backup ID naming convention is YYYYMMDDHHMM
 
     -c                      Make a backup of the Unbound configuration directory
-    config-recommended      $unbound_config_dir
+    config                  $unbound_config_dir
     --config-recommended    Remove the current Unbound configuration, and
                             install unbound-config base config and additional
                             recommended config fragments
@@ -322,16 +322,20 @@ Where OPTION is one of
     --install-binaries      unbound-control, unbound-control-setup, unbound-host
 
     -l                      List possible backup IDs found in
-    list-backups            $unbound_config_dir-backup
+    list                    $unbound_config_dir-backup
     --list-backups          Useful for getting backup IDs for --restore-backup
 
     -r                      Remove the current Unbound configuration
-    remove-config
+    remove
     --remove-config
 
     -R ID                   Restore a backup of your Unbound configuration to
     restore-backup ID       the Unbound configuration directory
     --restore-backup ID     Use --list-backups to list possible backup IDs
+
+    -s                      Download and install the unbound-config script to
+    script                  local storage, or update an existing copy
+    --install-script
 
     -u                      Uninstall unbound-config unbound binaries
     uninstall
@@ -484,9 +488,55 @@ download_binaries() {
     echo -e "Extracting unbound-$unbound_version.tar.gz to $temp_dir ...\n"
     tar -vzxf $temp_dir/unbound-$unbound_version.tar.gz -C $temp_dir
     echo -e "\n\t- Done\n"
-    # Display the unbound-config version
-    $temp_dir/unbound-config --version
-    exit 0
+}
+
+install_script() {
+    # We need to figure out the actual user
+    if [[ -n $SUDO_USER ]]; then
+        script_user="$SUDO_USER"
+    else
+        script_user="$USER"
+    fi
+    local_bin="/usr/local/bin"
+    user_bin="/home/$script_user/bin"
+    # Prefer /usr/local/bin
+    if [[ -d "$local_bin" ]]; then
+        script_dir="$local_bin"
+    else
+        # But the user's personal bin sirectory will do
+        if [[ ! -d "$user_bin" ]]; then
+            action_text="create a personal bin directory"
+            title_text="This command will $action_text"
+            confirm_action
+            # Even if we have to create it
+            mkdir $user_bin
+            chown $script_user:$script_user $user_bin
+        fi
+        script_dir="$user_bin"
+        # We need to warn if the personal bin isn't in $PATH
+        if [[ ":$PATH:" == *":$script_dir:"* ]]; then
+             title_text="Personal bin directory created"
+             message_text="Please ensure the personal bin directory $script_dir exists in the system \$PATH.\n\nYou can add this path to your system \$PATH temporarily or as required using the following command:\nexport PATH=$user_bin:\$PATH"
+             message_box
+        fi
+    fi
+    package="wget"
+    test_package
+    # Action text for installing and updating locally installed unbound-config
+    if [[ -f "$script_dir/unbound-config" ]]; then
+        action_text="update the locally installed unbound-config"
+    else
+        action_text="install unbound-config locally"
+    fi
+    title_text="This command will $action_text"
+    confirm_action
+    echo -e "Downloading and installing unbound-config ..."
+    # Always pull the latest unbound-config from git
+    wget -nv https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/unbound-config -O $script_dir/unbound-config
+    # Set owner:group and exec status for unbound-config
+    chown $script_user:$script_user $script_dir/unbound-config
+    chmod +x $script_dir/unbound-config
+    echo -e "\t - Done\n"
 }
 
 # Install unbound-config Unbound binaries
@@ -500,7 +550,10 @@ install_unbound() {
     message_box
     package="unbound"
     test_package
-    test_architecture
+    # Since there is a non-zero possibility we might get the chicken before the
+    # egg, ensure a binary package exists
+    # download_binaries tests the architecture so we kill two, uh... chickens
+    download_binaries
     title_text="This command will $action_text"
     confirm_action
     echo -e "Stopping Unbound ..."
@@ -580,17 +633,18 @@ fi
 
 # Define the commandline options unbound-config accepts and assign a function
 case "${1}" in
-    "-b" | "backup-config" | "--backup-config"              ) backup_config ;;
-    "-c" | "config-recommended" | "--config-recommended"    ) config_recommended ;;
-    "-d" | "download" | "--download-binaries"               ) download_binaries "$@" ;;
-    "-D" | "delete" | "--delete-backups"                    ) delete_backups ;;
-    "-h" | "help" | "--help"                                ) help_function ;;
-    "-i" | "install" | "--install-binaries"                 ) install_unbound ;;
-    "-l" | "list-backups" | "--list-backups"                ) list_backups  ;;
-    "-r" | "remove-config" | "--remove-config"              ) remove_config ;;
-    "-R" | "restore-backup" | "--restore-backup"            ) restore_backup "$@" ;;
-    "-u" | "uninstall" | "--uninstall-binaries"             ) uninstall_unbound ;;
-    "-v" | "version" | "--version"                          ) show_version ;;
+    "-b" | "backup-config" | "--backup-config"  ) backup_config ;;
+    "-c" | "config" | "--config-recommended"    ) config_recommended ;;
+    "-d" | "download" | "--download-binaries"   ) download_binaries "$@" ;;
+    "-D" | "delete" | "--delete-backups"        ) delete_backups ;;
+    "-h" | "help" | "--help"                    ) help_function ;;
+    "-i" | "install" | "--install-binaries"     ) install_unbound ;;
+    "-l" | "list" | "--list-backups"            ) list_backups  ;;
+    "-r" | "remove" | "--remove-config"         ) remove_config ;;
+    "-R" | "restore" | "--restore-backup"       ) restore_backup "$@" ;;
+    "-s" | "script" | "--install-script"        ) install_script ;;
+    "-u" | "uninstall" | "--uninstall-binaries" ) uninstall_unbound ;;
+    "-v" | "version" | "--version"              ) show_version ;;
     # Direct wildcards to --help
-    *                                                       ) help_function ;;
+    *                                           ) help_function ;;
 esac
