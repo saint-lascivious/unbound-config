@@ -284,7 +284,7 @@ Where OPTION is one of
                             The backup ID naming convention is YYYYMMDDHHMM
 
     -c                      Make a backup of the Unbound configuration directory
-    config-recommended      /etc/unbound/unbound.conf.d
+    config                  /etc/unbound/unbound.conf.d
     --config-recommended    Remove the current Unbound configuration, and
                             install unbound-config base config and additional
                             recommended config fragments
@@ -310,15 +310,15 @@ Where OPTION is one of
     --install-binaries      unbound-control, unbound-control-setup, unbound-host
 
     -l                      List possible backup IDs found in
-    list-backups            /etc/unbound/unbound.conf.d-backup
+    list                    /etc/unbound/unbound.conf.d-backup
     --list-backups          Useful for getting backup IDs for --restore-backup
 
     -r                      Remove the current Unbound configuration
-    remove-config
+    remove
     --remove-config
 
     -R ID                   Restore a backup of your Unbound configuration to
-    restore-backup ID       the Unbound configuration directory
+    restore ID              the Unbound configuration directory
     --restore-backup ID     Use --list-backups to list possible backup IDs
 
     -s                      Download and install the unbound-config script to

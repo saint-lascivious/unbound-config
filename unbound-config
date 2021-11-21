@@ -633,7 +633,7 @@ fi
 
 # Define the commandline options unbound-config accepts and assign a function
 case "${1}" in
-    "-b" | "backup-config" | "--backup-config"  ) backup_config ;;
+    "-b" | "backup" | "--backup-config"         ) backup_config ;;
     "-c" | "config" | "--config-recommended"    ) config_recommended ;;
     "-d" | "download" | "--download-binaries"   ) download_binaries "$@" ;;
     "-D" | "delete" | "--delete-backups"        ) delete_backups ;;
