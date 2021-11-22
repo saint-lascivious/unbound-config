@@ -3,7 +3,7 @@
 export LC_ALL=C
 
 # unbound-config version
-version="0.9.8"
+version="0.9.8.1"
 
 # Current major unbound-config Unbound binary version
 unbound_version="1.13.3"
@@ -642,10 +642,10 @@ case "${1}" in
     "-D" | "delete" | "--delete-backups"        ) delete_backups ;;
     "-h" | "help" | "--help"                    ) help_function ;;
     "-i" | "binaries" | "--install-binaries"    ) install_unbound ;;
+    "-I" | "script" | "--install-script"        ) install_script ;;
     "-l" | "list" | "--list-backups"            ) list_backups  ;;
     "-r" | "remove" | "--remove-config"         ) remove_config ;;
     "-R" | "restore" | "--restore-backup"       ) restore_backup "$@" ;;
-    "-s" | "script" | "--install-script"        ) install_script ;;
     "-u" | "uninstall" | "--uninstall-binaries" ) uninstall_unbound ;;
     "-v" | "version" | "--version"              ) show_version ;;
     # Direct wildcards to --help
