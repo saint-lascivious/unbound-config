@@ -3,7 +3,7 @@
 export LC_ALL=C
 
 # unbound-config version
-version="0.9.6"
+version="0.9.7"
 
 # Current major unbound-config Unbound binary version
 unbound_version="1.13.3"
@@ -334,8 +334,8 @@ Where OPTION is one of
     --restore-backup ID     Use --list-backups to list possible backup IDs
 
     -s                      Download and install the unbound-config script to
-    script                  local storage, or update an existing copy
-    --install-script
+    script                  local storage, or update an existing locally
+    --install-script        installed copy
 
     -u                      Uninstall unbound-config unbound binaries
     uninstall
@@ -491,7 +491,7 @@ download_binaries() {
 }
 
 install_script() {
-    # We need to figure out the actual user
+    # We need to figure out the actual user if we were called with sudo
     if [[ -n $SUDO_USER ]]; then
         script_user="$SUDO_USER"
     else
@@ -533,8 +533,11 @@ install_script() {
     echo -e "Downloading and installing unbound-config ..."
     # Always pull the latest unbound-config from git
     wget -nv https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/unbound-config -O $script_dir/unbound-config
-    # Set owner:group and exec status for unbound-config
+    # Set owner:group for unbound-config if we install to ~/bin
+    if [[ "$script_dir" == "$user_bin" ]]; then
     chown $script_user:$script_user $script_dir/unbound-config
+    fi
+    # Make sure the installed unbound-config script is executable
     chmod +x $script_dir/unbound-config
     echo -e "\t - Done\n"
 }
@@ -638,7 +641,7 @@ case "${1}" in
     "-d" | "download" | "--download-binaries"   ) download_binaries "$@" ;;
     "-D" | "delete" | "--delete-backups"        ) delete_backups ;;
     "-h" | "help" | "--help"                    ) help_function ;;
-    "-i" | "install" | "--install-binaries"     ) install_unbound ;;
+    "-i" | "binaries" | "--install-binaries"    ) install_unbound ;;
     "-l" | "list" | "--list-backups"            ) list_backups  ;;
     "-r" | "remove" | "--remove-config"         ) remove_config ;;
     "-R" | "restore" | "--restore-backup"       ) restore_backup "$@" ;;

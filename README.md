@@ -306,7 +306,7 @@ Where OPTION is one of
     --help
 
     -i                      Install unbound-config unbound binaries:
-    install                 unbound, unbound-anchor, unbound-checkconf,
+    binaries                unbound, unbound-anchor, unbound-checkconf,
     --install-binaries      unbound-control, unbound-control-setup, unbound-host
 
     -l                      List possible backup IDs found in
@@ -322,15 +322,15 @@ Where OPTION is one of
     --restore-backup ID     Use --list-backups to list possible backup IDs
 
     -s                      Download and install the unbound-config script to
-    script                  local storage, or update an existing copy
-    --install-script
+    script                  local storage, or update an existing locally
+    --install-script        installed copy
 
     -u                      Uninstall unbound-config unbound binaries
     uninstall
     --uninstall-binaries
 
     -v                      Displays the unbound-config version
-    version                 Current unbound-config version v0.9.6
+    version                 Current unbound-config version v0.9.7
     --version
 ```
 
