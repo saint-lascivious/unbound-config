@@ -220,57 +220,25 @@ Any updates to the system package will remove the custom binary.
 
 * What do they run on?
 
-At the present, aarch64 and armhf/armv7l binaries are provided.
+At the present, aarch64 and armhf (armv6l, armv7l) binaries are provided.
 
 * Will you continue to update these binaries?
 
 Probably, yes.
 
-* Install
-
-Ensure unbound is installed using the system package (we'll use its init scripts and dependencies)
-```
-sudo apt install unbound
-```
-
 * Download and install unbound-config unbound binaries
 ```
 cd /tmp
 ```
-For aarch64 compatible hosts
 ```
-wget https://github.com/saint-lascivious/unbound-config/raw/master/binaries/aarch64/unbound-1.13.3.tar.gz
-```
-For armhf compatible hosts
-```
-wget https://github.com/saint-lascivious/unbound-config/raw/master/binaries/armhf/unbound-1.13.3.tar.gz
+wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/unbound-config && chmod +x unbound-config
 ```
 ```
-tar -xf unbound-1.13.3.tar.gz
-```
-```
-chmod +x unbound-config
-```
-```
-./unbound-config --install-binaries
-```
-
-Uninstall unbound-config unbound binaries
-```
-cd /tmp
-```
-```
-wget https://github.com/saint-lascivious/unbound-config/raw/master/binaries/unbound-config
-```
-```
-chmod +x unbound-config
-```
-```
-./unbound-config --uninstall-binaries
+./unbound-config --install-unbound
 ```
 
 ## Additional Features
-A number of additional features are available via the unbound-config script.
+A number of additional features are available via the unbound-config helper script.
 
 The full --help text for unbound-config is as follows:
 ```
@@ -306,8 +274,8 @@ Where OPTION is one of
     --help
 
     -i                      Install unbound-config unbound binaries:
-    binaries                unbound, unbound-anchor, unbound-checkconf,
-    --install-binaries      unbound-control, unbound-control-setup, unbound-host
+    unbound                 unbound, unbound-anchor, unbound-checkconf,
+    --install-unbound       unbound-control, unbound-control-setup, unbound-host
 
     -I                      Download and install the unbound-config script to
     script                  local storage, or update an existing locally
@@ -322,7 +290,7 @@ Where OPTION is one of
     --remove-config
 
     -R ID                   Restore a backup of your Unbound configuration to
-    restore ID              the Unbound configuration directory
+    restore-backup ID       the Unbound configuration directory
     --restore-backup ID     Use --list-backups to list possible backup IDs
 
     -u                      Uninstall unbound-config unbound binaries
@@ -330,7 +298,7 @@ Where OPTION is one of
     --uninstall-binaries
 
     -v                      Displays the unbound-config version
-    version                 Current unbound-config version v0.9.7
+    version                 Current unbound-config version v0.9.9
     --version
 ```
 

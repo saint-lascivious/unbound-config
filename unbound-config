@@ -3,7 +3,7 @@
 export LC_ALL=C
 
 # unbound-config version
-version="0.9.8.1"
+version="0.9.9"
 
 # Current major unbound-config Unbound binary version
 unbound_version="1.13.3"
@@ -318,8 +318,8 @@ Where OPTION is one of
     --help
 
     -i                      Install unbound-config unbound binaries:
-    binaries                unbound, unbound-anchor, unbound-checkconf,
-    --install-binaries      unbound-control, unbound-control-setup, unbound-host
+    unbound                 unbound, unbound-anchor, unbound-checkconf,
+    --install-unbound       unbound-control, unbound-control-setup, unbound-host
 
     -I                      Download and install the unbound-config script to
     script                  local storage, or update an existing locally
@@ -530,7 +530,7 @@ install_script() {
     fi
     title_text="This command will $action_text"
     confirm_action
-    echo -e "Downloading and installing unbound-config ..."
+    echo -e "Downloading and installing unbound-config ...\n"
     # Always pull the latest unbound-config from git
     wget -nv https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/unbound-config -O $script_dir/unbound-config
     # Set owner:group for unbound-config if we install to ~/bin
@@ -539,7 +539,7 @@ install_script() {
     fi
     # Make sure the installed unbound-config script is executable
     chmod +x $script_dir/unbound-config
-    echo -e "\t - Done\n"
+    echo -e "\n\t - Done\n"
 }
 
 # Install unbound-config Unbound binaries
@@ -641,7 +641,7 @@ case "${1}" in
     "-d" | "download" | "--download-binaries"   ) download_binaries "$@" ;;
     "-D" | "delete" | "--delete-backups"        ) delete_backups ;;
     "-h" | "help" | "--help"                    ) help_function ;;
-    "-i" | "binaries" | "--install-binaries"    ) install_unbound ;;
+    "-i" | "unbound" | "--install-unbound"      ) install_unbound ;;
     "-I" | "script" | "--install-script"        ) install_script ;;
     "-l" | "list" | "--list-backups"            ) list_backups  ;;
     "-r" | "remove" | "--remove-config"         ) remove_config ;;
