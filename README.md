@@ -226,12 +226,12 @@ At the present, aarch64 and armhf (armv6l, armv7l) binaries are provided.
 
 Probably, yes.
 
-* Download and install unbound-config unbound binaries
+* Download and install unbound-config unbound binaries using the unbound-config helper script
 ```
 cd /tmp
 ```
 ```
-wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/unbound-config && chmod +x unbound-config
+wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/script/unbound-config && chmod +x unbound-config
 ```
 ```
 ./unbound-config --install-unbound
@@ -290,7 +290,7 @@ Where OPTION is one of
     --remove-config
 
     -R ID                   Restore a backup of your Unbound configuration to
-    restore-backup ID       the Unbound configuration directory
+    restore ID              the Unbound configuration directory
     --restore-backup ID     Use --list-backups to list possible backup IDs
 
     -u                      Uninstall unbound-config unbound binaries
@@ -298,7 +298,7 @@ Where OPTION is one of
     --uninstall-binaries
 
     -v                      Displays the unbound-config version
-    version                 Current unbound-config version v0.9.9
+    version                 Current unbound-config version v0.9.9.1
     --version
 ```
 

@@ -3,7 +3,7 @@
 export LC_ALL=C
 
 # unbound-config version
-version="0.9.9"
+version="0.9.9.1"
 
 # Current major unbound-config Unbound binary version
 unbound_version="1.13.3"
@@ -334,7 +334,7 @@ Where OPTION is one of
     --remove-config
 
     -R ID                   Restore a backup of your Unbound configuration to
-    restore-backup ID       the Unbound configuration directory
+    restore ID              the Unbound configuration directory
     --restore-backup ID     Use --list-backups to list possible backup IDs
 
     -u                      Uninstall unbound-config unbound binaries
@@ -532,7 +532,7 @@ install_script() {
     confirm_action
     echo -e "Downloading and installing unbound-config ...\n"
     # Always pull the latest unbound-config from git
-    wget -nv https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/unbound-config -O $script_dir/unbound-config
+    wget -nv https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/script/unbound-config -O $script_dir/unbound-config
     # Set owner:group for unbound-config if we install to ~/bin
     if [[ "$script_dir" == "$user_bin" ]]; then
     chown $script_user:$script_user $script_dir/unbound-config
