@@ -309,6 +309,10 @@ Where OPTION is one of
     binaries                unbound, unbound-anchor, unbound-checkconf,
     --install-binaries      unbound-control, unbound-control-setup, unbound-host
 
+    -I                      Download and install the unbound-config script to
+    script                  local storage, or update an existing locally
+    --install-script        installed copy
+
     -l                      List possible backup IDs found in
     list                    /etc/unbound/unbound.conf.d-backup
     --list-backups          Useful for getting backup IDs for --restore-backup
@@ -320,10 +324,6 @@ Where OPTION is one of
     -R ID                   Restore a backup of your Unbound configuration to
     restore ID              the Unbound configuration directory
     --restore-backup ID     Use --list-backups to list possible backup IDs
-
-    -s                      Download and install the unbound-config script to
-    script                  local storage, or update an existing locally
-    --install-script        installed copy
 
     -u                      Uninstall unbound-config unbound binaries
     uninstall

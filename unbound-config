@@ -3,7 +3,7 @@
 export LC_ALL=C
 
 # unbound-config version
-version="0.9.7"
+version="0.9.8"
 
 # Current major unbound-config Unbound binary version
 unbound_version="1.13.3"
@@ -318,8 +318,12 @@ Where OPTION is one of
     --help
 
     -i                      Install unbound-config unbound binaries:
-    install                 unbound, unbound-anchor, unbound-checkconf,
+    binaries                unbound, unbound-anchor, unbound-checkconf,
     --install-binaries      unbound-control, unbound-control-setup, unbound-host
+
+    -I                      Download and install the unbound-config script to
+    script                  local storage, or update an existing locally
+    --install-script        installed copy
 
     -l                      List possible backup IDs found in
     list                    $unbound_config_dir-backup
@@ -332,10 +336,6 @@ Where OPTION is one of
     -R ID                   Restore a backup of your Unbound configuration to
     restore-backup ID       the Unbound configuration directory
     --restore-backup ID     Use --list-backups to list possible backup IDs
-
-    -s                      Download and install the unbound-config script to
-    script                  local storage, or update an existing locally
-    --install-script        installed copy
 
     -u                      Uninstall unbound-config unbound binaries
     uninstall
