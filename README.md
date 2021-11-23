@@ -1,38 +1,33 @@
 # unbound-config
 
-configuration files for [unbound](https://nlnetlabs.nl/projects/unbound/about/) recursive dns resolver
+Configuration and management of NLnet Labs' [Unbound](https://nlnetlabs.nl/projects/unbound/about/) recursive nameserver.
 
-Settings and values have been derived in part by some suggested
-defaults in [docs.pi-hole.net/guides/unbound](https://docs.pi-hole.net/guides/unbound/) in order to avoid
-some possible interoperability issues and also from the documentation
-found at [nlnetlabs.nl/documentation/unbound/howto-optimise](https://nlnetlabs.nl/documentation/unbound/howto-optimise/)
-specifically regarding optimising unbound
 
 ## Usage
-* Backup existing environment files
-```
-cd ~
-mkdir .backup
-sudo cp /etc/unbound/unbound.conf.d/*.conf ~/.backup
-```
-* Switch to the /etc/unbound/unbound.conf.d/ directory
-```
-cd /etc/unbound/unbound.conf.d/
-```
 
-* Remove pi-hole.conf if you deployed unbound using [Pi-hole documentation](https://docs.pi-hole.net/guides/unbound/)
-```
-sudo rm pi-hole.conf
-```
+* Backup And Remove Existing Unbound Configuration
 
-* Download the base config:
+The unbound-config helper script can be run from anywhere but this saves us having to clean up.
+```
+cd /tmp
+```
+```
+wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/script/unbound-config && chmod +x unbound-config
+```
+You will be prompted to make a backup of your existing configuration before the current configuration is able to be removed.
+```
+./unbound-config --remove-config
+```
+Note: You will be prompted to install any unmet dependencies as they are required.
+
+* Download unbound-config Base Configuration
 
 Base (Required)
 ```
 sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/base.conf
 ```
 
-* Download any additional config file fragments as required:
+* Download Additonal Config Fragments As Required
 
 Access Control
 ```
@@ -189,7 +184,32 @@ sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/mast
 ```
 
 * Restart unbound
+
 After any changes to the server configuration the server must be restarted
+```
+sudo service unbound restart
+```
+
+## Alternative Install Method
+
+ * Automated Installation
+
+Install base.conf and recommended config fragments using the unbound-config helper script
+
+Note: Backup and removal of any existing Unbound configuration is handled semi-automatically using the above command flag.
+```
+cd /tmp
+```
+```
+wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/script/unbound-config && chmod +x unbound-config
+```
+```
+./unbound-config --config-recommended
+```
+
+* Restart unbound
+
+After any changes to the server configuration the server must be restarted.
 ```
 sudo service unbound restart
 ```
@@ -220,7 +240,7 @@ Any updates to the system package will remove the custom binary.
 
 * What do they run on?
 
-At the present, aarch64 and armhf (armv6l, armv7l) binaries are provided.
+At the present, aarch64 and armhf (armv6l, armv7l) binaries are provided. Only tested on Debian and Ubuntu derivaties.
 
 * Will you continue to update these binaries?
 
@@ -238,6 +258,7 @@ wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/sc
 ```
 
 ## Additional Features
+
 A number of additional features are available via the unbound-config helper script.
 
 The full --help text for unbound-config is as follows:
@@ -298,18 +319,21 @@ Where OPTION is one of
     --uninstall-binaries
 
     -v                      Displays the unbound-config version
-    version                 Current unbound-config version v0.9.9.1
+    version                 Current unbound-config version v1.0
     --version
 ```
 
 ## Notes On Additional System Configuration
+
 * TCP Fast Open
+
 If your kernel supports it, you may want to add the following the following to /etc/sysctl.conf or /etc/sysctl.d/99-tcp-fastopen.conf (you will need to create this file) and restarting the machine.
 ```
 net.ipv4.tcp_fastopen=3
 ```
 
 * Large Buffers
+
 Large buffer values may print a warning about insufficient net.core memory values.
 
 You can address this adding the following to /etc/sysctl.conf or /etc/sysctl.d/99-net-core-mem.conf (you will need to create this file) and restarting the machine.
@@ -321,6 +345,7 @@ net.core.wmem_max=4194304
 ```
 
 * Redis CacheDB
+
 If using Redis and the cachedb module, you may want the following to /etc/sysctl.conf or /etc/sysctl.d/99-overcommit-memory.conf (you will need to create this file) and restarting the machine.
 ```
 vm.overcommit_memory=1
@@ -333,6 +358,7 @@ sudo sysctl FLAG=VALUE
 ```
 
 ## Contact
+
 * Discord
 [SaintLascivious](https://discord.gg/NC7taVyn)
 

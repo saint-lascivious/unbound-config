@@ -3,7 +3,7 @@
 export LC_ALL=C
 
 # unbound-config version
-version="0.9.9.1"
+version="1.0"
 
 # Current major unbound-config Unbound binary version
 unbound_version="1.13.3"
@@ -112,7 +112,6 @@ backup_config() {
         echo -e "No Unbound configuration directory exists at"
         echo -e "$unbound_config_dir"
         echo -e "\nCannot backup Unbound configuration, no configuration directory"
-        exit 0
     fi
 }
 
@@ -497,14 +496,14 @@ install_script() {
     else
         script_user="$USER"
     fi
-    local_bin="/usr/local/bin"
-    user_bin="/home/$script_user/bin"
+    system_bin_dir="/usr/local/bin"
+    user_bin_dir="/home/$script_user/bin"
     # Prefer /usr/local/bin
-    if [[ -d "$local_bin" ]]; then
-        script_dir="$local_bin"
+    if [[ -d "$system_bin_dir" ]]; then
+        script_dir="$system_bin_dir"
     else
         # But the user's personal bin sirectory will do
-        if [[ ! -d "$user_bin" ]]; then
+        if [[ ! -d "$user_bin_dir" ]]; then
             action_text="create a personal bin directory"
             title_text="This command will $action_text"
             confirm_action
@@ -512,7 +511,7 @@ install_script() {
             mkdir $user_bin
             chown $script_user:$script_user $user_bin
         fi
-        script_dir="$user_bin"
+        script_dir="$user_bin_dir"
         # We need to warn if the personal bin isn't in $PATH
         if [[ ":$PATH:" == *":$script_dir:"* ]]; then
              title_text="Personal bin directory created"
@@ -533,8 +532,8 @@ install_script() {
     echo -e "Downloading and installing unbound-config ...\n"
     # Always pull the latest unbound-config from git
     wget -nv https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/script/unbound-config -O $script_dir/unbound-config
-    # Set owner:group for unbound-config if we install to ~/bin
-    if [[ "$script_dir" == "$user_bin" ]]; then
+    # Set owner:group for unbound-config if we install to the user's /home/$USER/bin directory
+    if [[ "$script_dir" == "$user_bin_dir" ]]; then
     chown $script_user:$script_user $script_dir/unbound-config
     fi
     # Make sure the installed unbound-config script is executable
