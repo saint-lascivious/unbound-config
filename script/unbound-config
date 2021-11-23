@@ -3,7 +3,7 @@
 export LC_ALL=C
 
 # unbound-config version
-version="1.0"
+version="1.1"
 
 # Current major unbound-config Unbound binary version
 unbound_version="1.13.3"
@@ -74,6 +74,8 @@ backup_config() {
     obnoxious_header
     # Date format breaks down to YYYYMMDDHHMM
     date_format="$(date +%Y%m%d%H%M)"
+    # Sanitise user input
+    input_format="$(echo $2 | sed -e 's/[^A-Za-z0-9._-]/_/g')"
     launch_dir="$(pwd)"
     if [[ -d "$unbound_config_dir" ]]; then
         # There is an Unbound config directory, try check if it is empty or not
@@ -90,9 +92,16 @@ backup_config() {
             cd $unbound_config_dir-backup
             # Make a .tar.gz archive of the current Unbound configuration
             echo -e "Backing up the current Unbound configuration ...\n"
+            # Allow an optional string to be passed to be used as backup ID,
+            # default to the current date and time if no value is given
+            if [[ ! -n "$2" ]]; then
+                archive_name="$date_format.tar.gz"
+            else
+                archive_name="$input_format.tar.gz"
+            fi
             # Strange tar dance to make an archive of just the target
             # directory contents without a skeleton parent directory structure
-            tar -czvf $date_format.tar.gz -C $unbound_config_dir .
+            tar -czvf "$archive_name" -C $unbound_config_dir .
             echo -e "\n\t- Done\n"
             # Switch back to where we launched from
             cd $launch_dir
@@ -257,7 +266,7 @@ restore_backup() {
                 echo -e "\t- Done\n"
                 # Extract the archive to its destination
                 echo -e "Restoring Unbound configuration backup...\n"
-                tar -vzxf $unbound_config_dir-backup/$backup_id.tar.gz -C $unbound_config_dir
+                tar -vzxf "$unbound_config_dir-backup/$backup_id.tar.gz" -C $unbound_config_dir
                 echo -e "\n\t- Done"
             else
                 # The backup directory is empty
@@ -292,53 +301,75 @@ Where OPTION is one of
     -b                      Backup the current Unbound configuration to a
     backup                  .tar.gz archive located within
     --backup-config         $unbound_config_dir-backup
-                            The backup ID naming convention is YYYYMMDDHHMM
 
-    -c                      Make a backup of the Unbound configuration directory
-    config                  $unbound_config_dir
-    --config-recommended    Remove the current Unbound configuration, and
-                            install unbound-config base config and additional
-                            recommended config fragments
+                            Takes an optional parameter to be normalised and
+                            used as the backup ID, strings containing spaces
+                            must be quoted, e.g. "my unbound backup"
 
-                            Requires libevent-dev to be installed
+                            The default backup ID naming scheme is:
+                            YYYYMMDDHHMM
+
+
+    -c                      Install recommended unbound-config config
+    config                  fragments:
+    --config-recommended    Base (Required) Buffers, Caches, Hardening,
+                            Libevent, Multithreading, Prefetch, Private
+                            Address Ranges, Verbosity
+
 
     -d                      Download unbound-config Unbound binaries in a
     download                .tar.gz archive to $temp_dir
-    --download-binaries     Takes the optional parameter --force to remove an
+    --download-binaries
+                            Takes the optional parameter --force to remove an
                             existing binary package before downloading a new
                             one
 
-    -D                      Delete all Unbound configuration backups that
+
+    -D                      Delete any Unbound configuration backups that
     delete                  unbound-config --backup has made
     --delete-backups
 
-    -h                      Displays this help dialogue
+
+    -h                      Display this help dialogue
     help
     --help
 
+
     -i                      Install unbound-config unbound binaries:
     unbound                 unbound, unbound-anchor, unbound-checkconf,
-    --install-unbound       unbound-control, unbound-control-setup, unbound-host
+    --install-unbound       unbound-control, unbound-control-setup,
+                            unbound-host
+
+                            Takes the optional parameter --unbound-only to
+                            install only the unbound binary
 
     -I                      Download and install the unbound-config script to
     script                  local storage, or update an existing locally
     --install-script        installed copy
 
+
     -l                      List possible backup IDs found in
     list                    $unbound_config_dir-backup
-    --list-backups          Useful for getting backup IDs for --restore-backup
+    --list-backups
+                            Useful for getting backup IDs for --restore-backup
+
 
     -r                      Remove the current Unbound configuration
     remove
-    --remove-config
+    --remove-config         A backup is required before removing any existing
+                            configuration, prompts for backup if none exist
+
 
     -R ID                   Restore a backup of your Unbound configuration to
     restore ID              the Unbound configuration directory
-    --restore-backup ID     Use --list-backups to list possible backup IDs
+    --restore-backup ID
+                            Use --list-backups to list possible backup IDs
 
-    -u                      Uninstall unbound-config unbound binaries
-    uninstall
+
+    -u                      Uninstall any unbound binaries unbound-config may
+    uninstall               have installed
     --uninstall-binaries
+
 
     -v                      Displays the unbound-config version
     version                 Current unbound-config version v$version
@@ -427,20 +458,20 @@ config_recommended() {
     remove_config
     #Install required unbound-config base config
     echo -e "Installing base.conf ..."
-    wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/base.conf -P $unbound_config_dir
+    wget -q --show-progress https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/base.conf -P $unbound_config_dir
     echo -e "\t- Done\n"
     # Install recommended unbound-config config fragments
     echo -e "Installing buffers.conf ..."
-    wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/buffers.conf -P $unbound_config_dir
+    wget -q --show-progress https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/buffers.conf -P $unbound_config_dir
     echo -e "\t- Done\n"
     echo -e "Installing caches.conf ..."
-    wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/caches.conf -P $unbound_config_dir
+    wget -q --show-progress https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/caches.conf -P $unbound_config_dir
     echo -e "\t- Done\n"
     echo -e "Installing hardening.conf ..."
-    wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/hardening.conf -P $unbound_config_dir
+    wget -q --show-progress https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/hardening.conf -P $unbound_config_dir
     echo -e "\t- Done\n"
     echo -e "Installing libevent.conf ..."
-    wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/libevent.conf -P $unbound_config_dir
+    wget -q --show-progress https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/libevent.conf -P $unbound_config_dir
     echo -e "\t- Done\n"
     # Test CPU cores to see if we should enable multithreading
     echo -e "Determining number of CPU cores ..."
@@ -448,7 +479,7 @@ config_recommended() {
         # Download multithreading.conf if there's more than one core
         echo -e "\t- $test_cores CPU cores detected\n"
         echo -e "Installing multithreading.conf ..."
-       wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/multithreading.conf -P $unbound_config_dir
+       wget -q --show-progress https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/multithreading.conf -P $unbound_config_dir
         echo -e "\t- Done\n"
     else
         # Otherwise skip downloading multithreading.conf
@@ -456,13 +487,13 @@ config_recommended() {
         echo -e "Skipping multithreading.conf\n"
     fi
     echo -e "Installing prefetch.conf ..."
-    wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/prefetch.conf -P $unbound_config_dir
+    wget -q --show-progress https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/prefetch.conf -P $unbound_config_dir
     echo -e "\t- Done\n"
     echo -e "Installing private-ranges.conf ..."
-    wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/private-ranges.conf -P $unbound_config_dir
+    wget -q --show-progress https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/private-ranges.conf -P $unbound_config_dir
     echo -e "\t- Done\n"
     echo -e "Installing verbosity.conf ..."
-    wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/verbosity.conf -P $unbound_config_dir
+    wget -q --show-progress https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/verbosity.conf -P $unbound_config_dir
     echo -e "\t- Done\n"
 }
 
@@ -481,8 +512,8 @@ download_binaries() {
     test_package
     # Use test_arch result to determine which package to download
     echo -e "Downloading unbound-config Unbound binaries for $host_arch ..."
-    # Only download if newer or nonexistent
-    wget -c -nv -N https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/binaries/$host_arch/unbound-$unbound_version.tar.gz -P $temp_dir
+    # Download if newer or nonexisting
+    wget -c -nv -N -q --show-progress https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/binaries/$host_arch/unbound-$unbound_version.tar.gz -P $temp_dir
     echo -e "\t- Done\n"
     echo -e "Extracting unbound-$unbound_version.tar.gz to $temp_dir ...\n"
     tar -vzxf $temp_dir/unbound-$unbound_version.tar.gz -C $temp_dir
@@ -531,7 +562,7 @@ install_script() {
     confirm_action
     echo -e "Downloading and installing unbound-config ...\n"
     # Always pull the latest unbound-config from git
-    wget -nv https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/script/unbound-config -O $script_dir/unbound-config
+    wget -nv -q --show-progress https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/script/unbound-config -O $script_dir/unbound-config
     # Set owner:group for unbound-config if we install to the user's /home/$USER/bin directory
     if [[ "$script_dir" == "$user_bin_dir" ]]; then
     chown $script_user:$script_user $script_dir/unbound-config
@@ -544,8 +575,8 @@ install_script() {
 # Install unbound-config Unbound binaries
 install_unbound() {
     obnoxious_header
-    # Seems counterintuitive I know
     # Use the system package manager's setup of Unbound
+    # (seems counterintuitive I know, but we use the package manager's init system)
     action_text="install unbound-config Unbound binaries"
     title_text="Before you $action_text"
     message_text="It is safe, but not necessarily recommended to replace the system unbound binaries with those provided. Any updates to the system package will remove the custom binary."
@@ -565,6 +596,13 @@ install_unbound() {
     echo -e "Installing unbound ..."
     cp $temp_dir/unbound $unbound_dir
     echo -e "\t- Done\n"
+    # It's possible the user is only interested in the unbound binary
+    # so start the service and exit now if --unbound-only was passed
+    if [[ "$2" == "--unbound-only" ]]; then
+        service_action="start"
+        service_handler
+        exit 0
+    fi
     echo -e "Installing unbound-anchor ..."
     cp $temp_dir/unbound-anchor $unbound_dir
     echo -e "\t- Done\n"
@@ -597,27 +635,43 @@ uninstall_unbound() {
     service_action="stop"
     service="unbound"
     service_handler
-    echo -e "\t- Done\n"
-    echo -e "Uninstalling unbound ..."
-    rm $unbound_dir/unbound
-    echo -e "\t- Done\n"
-    echo -e "Uninstalling unbound-anchor ..."
-    rm $unbound_dir/unbound-anchor
-    echo -e "\t- Done\n"
-    echo -e "Uninstalling unbound-checkconf ..."
-    rm $unbound_dir/unbound-checkconf
-    echo -e "\t- Done\n"
-    echo -e "Uninstalling unbound-control ..."
-    rm $unbound_dir/unbound-control
-    echo -e "\t- Done\n"
-    echo -e "Uninstalling unbound-control-setup ..."
-    rm $unbound_dir/unbound-control-setup
-    echo -e "\t- Done\n"
-    echo -e "Uninstalling unbound-host ..."
-    rm $unbound_host_dir/unbound-host
-    echo -e "\t- Done\n"
+    # Test if the targets exist before trying to remove them to
+    # avoid noisy failures
+    if [[ -f "$unbound_dir/unbound" ]]; then
+        echo -e "Uninstalling unbound ..."
+        rm $unbound_dir/unbound
+        echo -e "\t- Done\n"
+    fi
+    if [[ -f "$unbound_dir/unbound-anchor" ]]; then
+        echo -e "Uninstalling unbound-anchor ..."
+        rm $unbound_dir/unbound-anchor
+        echo -e "\t- Done\n"
+    fi
+    if [[ -f "$unbound_dir/unbound-checkconf" ]]; then
+        echo -e "Uninstalling unbound-checkconf ..."
+        rm $unbound_dir/unbound-checkconf
+        echo -e "\t- Done\n"
+    fi
+    if [[ -f "$unbound_dir/unbound-control" ]]; then
+        echo -e "Uninstalling unbound-control ..."
+        rm $unbound_dir/unbound-control
+        echo -e "\t- Done\n"
+    fi
+    if [[ -f "$unbound_dir/unbound-control-setup" ]]; then
+        echo -e "Uninstalling unbound-control-setup ..."
+        rm $unbound_dir/unbound-control-setup
+        echo -e "\t- Done\n"
+    fi
+    if [[ -f "$unbound_host_dir/unbound" ]]; then
+        echo -e "Uninstalling unbound-host ..."
+        rm $unbound_host_dir/unbound-host
+        echo -e "\t- Done\n"
+    fi
+    # Remind the user that they need to finish the job
+    # All methods of testing if it is actually an unbound-config binary or
+    # from the system package manager are annoying or unreliable and annoying
     title_text="After you $action_text"
-    message_text="Reinstall or uninstall Unbound using your system package manager\n\nExample:\nsudo apt install --reinstall unbound\nsudo apt remove unbound"
+    message_text="Reinstall or uninstall Unbound using your system package manager\n\nExample:\nsudo apt install --reinstall unbound\nsudo apt remove unbound*"
     message_box
 }
 
@@ -635,7 +689,8 @@ fi
 
 # Define the commandline options unbound-config accepts and assign a function
 case "${1}" in
-    "-b" | "backup" | "--backup-config"         ) backup_config ;;
+    # Very few arguments process strings themselves
+    "-b" | "backup" | "--backup-config"         ) backup_config "$@" ;;
     "-c" | "config" | "--config-recommended"    ) config_recommended ;;
     "-d" | "download" | "--download-binaries"   ) download_binaries "$@" ;;
     "-D" | "delete" | "--delete-backups"        ) delete_backups ;;
@@ -647,6 +702,9 @@ case "${1}" in
     "-R" | "restore" | "--restore-backup"       ) restore_backup "$@" ;;
     "-u" | "uninstall" | "--uninstall-binaries" ) uninstall_unbound ;;
     "-v" | "version" | "--version"              ) show_version ;;
-    # Direct wildcards to --help
-    *                                           ) help_function ;;
 esac
+
+if [[ ! -n "$1" ]]; then
+   echo -e "unbound-config v$version requires one or more flags to operate"
+   echo -e "Use 'unbound-config --help' for detailed help information"
+fi

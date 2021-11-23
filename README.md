@@ -263,56 +263,78 @@ Where OPTION is one of
     -b                      Backup the current Unbound configuration to a
     backup                  .tar.gz archive located within
     --backup-config         /etc/unbound/unbound.conf.d-backup
-                            The backup ID naming convention is YYYYMMDDHHMM
 
-    -c                      Make a backup of the Unbound configuration directory
-    config                  /etc/unbound/unbound.conf.d
-    --config-recommended    Remove the current Unbound configuration, and
-                            install unbound-config base config and additional
-                            recommended config fragments
+                            Takes an optional parameter to be normalised and
+                            used as the backup ID, strings containing spaces
+                            must be quoted, e.g. "my unbound backup"
 
-                            Requires libevent-dev to be installed
+                            The default backup ID naming scheme is:
+                            YYYYMMDDHHMM
+
+
+    -c                      Install recommended unbound-config config
+    config                  fragments:
+    --config-recommended    Base (Required) Buffers, Caches, Hardening,
+                            Libevent, Multithreading, Prefetch, Private
+                            Address Ranges, Verbosity
+
 
     -d                      Download unbound-config Unbound binaries in a
-    download                .tar.gz archive to /tmp
-    --download-binaries     Takes the optional parameter --force to remove an
+    download                .tar.gz archive to $tmp
+    --download-binaries
+                            Takes the optional parameter --force to remove an
                             existing binary package before downloading a new
                             one
 
-    -D                      Delete all Unbound configuration backups that
+
+    -D                      Delete any Unbound configuration backups that
     delete                  unbound-config --backup has made
     --delete-backups
 
-    -h                      Displays this help dialogue
+
+    -h                      Display this help dialogue
     help
     --help
 
+
     -i                      Install unbound-config unbound binaries:
     unbound                 unbound, unbound-anchor, unbound-checkconf,
-    --install-unbound       unbound-control, unbound-control-setup, unbound-host
+    --install-unbound       unbound-control, unbound-control-setup,
+                            unbound-host
+
+                            Takes the optional parameter --unbound-only to
+                            install only the unbound binary
 
     -I                      Download and install the unbound-config script to
     script                  local storage, or update an existing locally
     --install-script        installed copy
 
+
     -l                      List possible backup IDs found in
     list                    /etc/unbound/unbound.conf.d-backup
-    --list-backups          Useful for getting backup IDs for --restore-backup
+    --list-backups
+                            Useful for getting backup IDs for --restore-backup
+
 
     -r                      Remove the current Unbound configuration
     remove
-    --remove-config
+    --remove-config         A backup is required before removing any existing
+                            configuration, prompts for backup if none exist
+
 
     -R ID                   Restore a backup of your Unbound configuration to
     restore ID              the Unbound configuration directory
-    --restore-backup ID     Use --list-backups to list possible backup IDs
+    --restore-backup ID
+                            Use --list-backups to list possible backup IDs
 
-    -u                      Uninstall unbound-config unbound binaries
-    uninstall
+
+    -u                      Uninstall any unbound binaries unbound-config may
+    uninstall               have installed
     --uninstall-binaries
 
+
     -v                      Displays the unbound-config version
-    version                 Current unbound-config version v1.0
+    version                 Current unbound-config version v1.1
     --version
 ```
 
