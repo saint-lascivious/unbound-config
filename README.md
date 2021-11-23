@@ -7,16 +7,12 @@ Configuration and management of NLnet Labs' [Unbound](https://nlnetlabs.nl/proje
 
 * Backup And Remove Existing Unbound Configuration
 
-The unbound-config helper script can be run from anywhere but this saves us having to clean up.
 ```
-cd /tmp
-```
-```
-wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/script/unbound-config && chmod +x unbound-config
+wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/script/unbound-config -P /tmp && chmod +x /tmp/unbound-config
 ```
 You will be prompted to make a backup of your existing configuration before the current configuration is able to be removed.
 ```
-./unbound-config --remove-config
+/tmp/unbound-config --remove-config
 ```
 Note: You will be prompted to install any unmet dependencies as they are required.
 
@@ -198,13 +194,10 @@ Install base.conf and recommended config fragments using the unbound-config help
 
 Note: Backup and removal of any existing Unbound configuration is handled semi-automatically using the above command flag.
 ```
-cd /tmp
+wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/script/unbound-config -P /tmp && chmod +x /tmp/unbound-config
 ```
 ```
-wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/script/unbound-config && chmod +x unbound-config
-```
-```
-./unbound-config --config-recommended
+/tmp/unbound-config --config-recommended
 ```
 
 * Restart unbound
@@ -257,7 +250,7 @@ wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/sc
 ./unbound-config --install-unbound
 ```
 
-## Additional Features
+## Additional unbound-config Features
 
 A number of additional features are available via the unbound-config helper script.
 
@@ -344,7 +337,7 @@ net.core.rmem_max=4104304
 net.core.wmem_max=4194304
 ```
 
-* Redis CacheDB
+* Redis Cache Database
 
 If using Redis and the cachedb module, you may want the following to /etc/sysctl.conf or /etc/sysctl.d/99-overcommit-memory.conf (you will need to create this file) and restarting the machine.
 ```
