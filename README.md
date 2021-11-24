@@ -192,7 +192,7 @@ sudo service unbound restart
 
 Install base.conf and recommended config fragments using the unbound-config helper script
 
-Note: Backup and removal of any existing Unbound configuration is handled semi-automatically using the above command flag.
+Note: Backup and removal of any existing Unbound configuration is handled semi-automatically, you will be prompted for confirmation.
 ```
 wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/script/unbound-config -P /tmp && chmod +x /tmp/unbound-config
 ```
