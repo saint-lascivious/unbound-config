@@ -3,7 +3,7 @@
 export LC_ALL=C
 
 # unbound-config version
-version="1.1"
+version="1.1.1"
 
 # Current major unbound-config Unbound binary version
 unbound_version="1.13.3"
@@ -382,7 +382,7 @@ service_handler() {
     # A slightly safer bet than assuming systemd will be present
     package="init-system-helpers"
     test_package
-    echo -e "Sending $service_action action to $service ..."
+    echo -e "Sending $service_action action to $service service ..."
     service $service $service_action
     echo -e "\t- Done\n"
 }
@@ -479,7 +479,7 @@ config_recommended() {
         # Download multithreading.conf if there's more than one core
         echo -e "\t- $test_cores CPU cores detected\n"
         echo -e "Installing multithreading.conf ..."
-       wget -q --show-progress https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/multithreading.conf -P $unbound_config_dir
+        wget -q --show-progress https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/multithreading.conf -P $unbound_config_dir
         echo -e "\t- Done\n"
     else
         # Otherwise skip downloading multithreading.conf
@@ -495,6 +495,9 @@ config_recommended() {
     echo -e "Installing verbosity.conf ..."
     wget -q --show-progress https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/verbosity.conf -P $unbound_config_dir
     echo -e "\t- Done\n"
+    service_action="restart"
+    service="unbound"
+    service_handler
 }
 
 # Download unbound-config .tar.gz packaged Unbound binaries
@@ -589,7 +592,6 @@ install_unbound() {
     download_binaries
     title_text="This command will $action_text"
     confirm_action
-    echo -e "Stopping Unbound ..."
     service_action="stop"
     service="unbound"
     service_handler
@@ -618,7 +620,6 @@ install_unbound() {
     echo -e "Installing unbound-host ..."
     cp $temp_dir/unbound-host $unbound_host_dir
     echo -e "\t- Done\n"
-    echo -e "Starting Unbound ..."
     service_action="start"
     service_handler
 }
@@ -631,7 +632,6 @@ uninstall_unbound() {
     action_text="uninstall unbound-config Unbound binaries"
     title_text="This command will $action_text"
     confirm_action
-    echo -e "Stopping Unbound ..."
     service_action="stop"
     service="unbound"
     service_handler

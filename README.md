@@ -200,13 +200,6 @@ wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/sc
 /tmp/unbound-config --config-recommended
 ```
 
-* Restart unbound
-
-After any changes to the server configuration the server must be restarted.
-```
-sudo service unbound restart
-```
-
 ## Source Compiled Unbound Binaries
 
 * What are they?
@@ -241,13 +234,10 @@ Probably, yes.
 
 * Download and install unbound-config unbound binaries using the unbound-config helper script
 ```
-cd /tmp
+wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/script/unbound-config -P /tmp && chmod +x /tmp/unbound-config
 ```
 ```
-wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/script/unbound-config && chmod +x unbound-config
-```
-```
-./unbound-config --install-unbound
+/tmp/unbound-config --install-unbound
 ```
 
 ## Additional unbound-config Features
@@ -334,7 +324,7 @@ Where OPTION is one of
 
 
     -v                      Displays the unbound-config version
-    version                 Current unbound-config version v1.1
+    version                 Current unbound-config version v1.1.1
     --version
 ```
 
