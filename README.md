@@ -1,12 +1,26 @@
 # unbound-config
 
-Configuration and management of NLnet Labs' [Unbound](https://nlnetlabs.nl/projects/unbound/about/) recursive nameserver.
+## About
 
+Originally designed purely for personal use, unbound-config is a project that has evolved around the configuration and management of NLnet Labs' [Unbound](https://nlnetlabs.nl/projects/unbound/about/) recursive nameserver.
+
+* Configuration Files
+
+A set of modular configuration files are offered including a base.conf (required), and multiple optional configuration files adding or defining additional functionality. Intended to serve as a working basis for further configuration while providing reasonably sane defaults, many values supplied are in fact current default values. Constant expirimentation in this area and the want for a ulitility to assist with backup and restore of different configuration profiles during testing lead to the following.
+
+* Utility Script
+
+Perhaps confusingly named, unbound-config is also a general management and utility script for Unbound. This utility offers a range of functions including creation, listing, and restoration of Unbound configuration backups, the ability to install a set of recommended unbound-config configuration files. This part of the project started from an installtion script, that was dumb as a sack of rocks, originally packaged exclusively with the following.
+
+* Unbound Binaries
+
+Finding limitation in the Unbound binaries distributed via various system package managers, I found myself compiling from source regularly. I would also regularly find users of this project and others frustrated by either the lack of modules, updates, or both in their system package manager's Unbound binaries eventually leading to my distributing a set of periodically updated Unbound binaries compiled from the latest Unbound via this repository.
 
 ## Usage
 
 * Backup And Remove Existing Unbound Configuration
 
+Backup and remove any existing Unbound configuration using the unbound-config utility script.
 ```
 wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/script/unbound-config -P /tmp && chmod +x /tmp/unbound-config
 ```
@@ -24,6 +38,8 @@ sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/mast
 ```
 
 * Download Additonal Config Fragments As Required
+
+Note: Recommended configuration fragments are marked as such.
 
 Access Control
 ```
@@ -181,7 +197,7 @@ sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/mast
 
 * Restart unbound
 
-After any changes to the server configuration the server must be restarted
+After any changes to the server configuration the server must be restarted.
 ```
 sudo service unbound restart
 ```
@@ -190,7 +206,7 @@ sudo service unbound restart
 
  * Automated Installation
 
-Install base.conf and recommended config fragments using the unbound-config helper script
+Install base.conf and recommended config fragments using the unbound-config utility script.
 
 Note: Backup and removal of any existing Unbound configuration is handled semi-automatically, you will be prompted for confirmation.
 ```
@@ -234,7 +250,7 @@ Probably, yes.
 
 ## Download And Install unbound-config Unbound Binaries
 
-Download and install unbound-config Unbound binaries using the unbound-config helper script.
+Download and install unbound-config Unbound binaries using the unbound-config utility script.
 ```
 wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/script/unbound-config -P /tmp && chmod +x /tmp/unbound-config
 ```
@@ -244,7 +260,7 @@ wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/sc
 
 ## Additional unbound-config Features
 
-A number of additional features are available via the unbound-config helper script.
+A number of additional features are available via the unbound-config utility script.
 
 The full --help text for unbound-config is as follows:
 ```
@@ -334,7 +350,7 @@ Where OPTION is one of
 
 * TCP Fast Open
 
-If your kernel supports it, you may want to add the following the following to /etc/sysctl.conf or /etc/sysctl.d/99-tcp-fastopen.conf (you will need to create this file) and restarting the machine.
+If using my Unbound binaries and your kernel supports it, you may want to add the following the following to /etc/sysctl.conf or /etc/sysctl.d/99-tcp-fastopen.conf (you will need to create this file) and restarting the machine.
 ```
 net.ipv4.tcp_fastopen=3
 ```
@@ -343,7 +359,7 @@ net.ipv4.tcp_fastopen=3
 
 Large buffer values may print a warning about insufficient net.core memory values.
 
-You can address this adding the following to /etc/sysctl.conf or /etc/sysctl.d/99-net-core-mem.conf (you will need to create this file) and restarting the machine.
+You can address this by adding the following to /etc/sysctl.conf or /etc/sysctl.d/99-net-core-mem.conf (you will need to create this file) and restarting the machine.
 ```
 net.core.rmem_default=2097152
 net.core.wmem_default=2097152
@@ -353,7 +369,11 @@ net.core.wmem_max=4194304
 
 * Redis Cache Database
 
-If using Redis and the cachedb module, you may want the following to /etc/sysctl.conf or /etc/sysctl.d/99-overcommit-memory.conf (you will need to create this file) and restarting the machine.
+Redis may print a warming regarding vm.overcommit and loss of data on background save.
+
+You can address this by adding the following to /etc/sysctl.conf or /etc/sysctl.d/99-overcommit-memory.conf (you will need to create this file) and restarting the machine.
+
+Note : See the Redis FAQ entry ['Background saving fails with a fork() error under Linux even if I have a lot of free RAM!'](https://redis.io/topics/faq#background-saving-fails-with-a-fork-error-under-linux-even-if-i-have-a-lot-of-free-ram) for more information.
 ```
 vm.overcommit_memory=1
 ```
