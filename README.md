@@ -232,7 +232,9 @@ At the present, aarch64 and armhf (armv6l, armv7l) binaries are provided. Only t
 
 Probably, yes.
 
-* Download and install unbound-config unbound binaries using the unbound-config helper script
+## Download And Install unbound-config Unbound Binaries
+
+Download and install unbound-config Unbound binaries using the unbound-config helper script.
 ```
 wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/script/unbound-config -P /tmp && chmod +x /tmp/unbound-config
 ```
@@ -324,7 +326,7 @@ Where OPTION is one of
 
 
     -v                      Displays the unbound-config version
-    version                 Current unbound-config version v1.1.1
+    version                 Current unbound-config version v1.1.2
     --version
 ```
 

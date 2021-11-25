@@ -3,7 +3,7 @@
 export LC_ALL=C
 
 # unbound-config version
-version="1.1.1"
+version="1.1.2"
 
 # Current major unbound-config Unbound binary version
 unbound_version="1.13.3"
@@ -475,16 +475,26 @@ config_recommended() {
     echo -e "\t- Done\n"
     # Test CPU cores to see if we should enable multithreading
     echo -e "Determining number of CPU cores ..."
-    if [ "$test_cores" -gt "1" ]; then
+    if [[ "$test_cores" -gt "1" ]]; then
         # Download multithreading.conf if there's more than one core
         echo -e "\t- $test_cores CPU cores detected\n"
         echo -e "Installing multithreading.conf ..."
         wget -q --show-progress https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/multithreading.conf -P $unbound_config_dir
         echo -e "\t- Done\n"
+        # Adjust thread count
+        if [[ "$test_cores" -lt "4" ]]; then
+        echo -e "Adjusting multithreading thread count ..."
+        sed -i s'/threads: 4/threads: 2/'g $unbound_config_dir/multithreading.conf
+        echo -e "\t- Done\n"
+        fi
     else
         # Otherwise skip downloading multithreading.conf
         echo -e "\t- $test_cores CPU core(s) detected\n"
-        echo -e "Skipping multithreading.conf\n"
+        echo -e "Skipping multithreading.conf ...\n"
+        # And adjust the number of cache slabs we use
+        echo -e "Adjusting cache slab count ..."
+        sed -i s'/slabs: 4/slabs: 2/'g $unbound_config_dir/caches.conf
+        echo -e "\t- Done\n"
     fi
     echo -e "Installing prefetch.conf ..."
     wget -q --show-progress https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/prefetch.conf -P $unbound_config_dir
