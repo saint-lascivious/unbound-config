@@ -3,7 +3,7 @@
 export LC_ALL=C
 
 # unbound-config version
-version="1.1.2"
+version="1.2"
 
 # Current major unbound-config Unbound binary version
 unbound_version="1.13.3"
@@ -389,27 +389,29 @@ service_handler() {
 
 # The ugliest dependency check you'll ever see
 test_package() {
-    # We should probably be testing for dpkg-query too
-    # TODO:
-    #    - Better, distribution agnostic if possible, or at least safer
-    #      dependency checking
-    package_query="$(dpkg-query -W --showformat='${Status}\n' $package | grep "install ok installed")"
-    if [[ ! -n "$package_query" ]]; then
-        package_to_install="$package"
-        test_apt="$(dpkg-query -W --showformat='${Status}\n' apt | grep "install ok installed")"
-        if [[ -n "$test_apt" ]]; then
-            # We think we found apt
-            # Ask if we can use it to install what we need
-            action_text="install $package_to_install using apt now"
-            title_text="Required package $package_to_install not found"
-            confirm_action
-            # If we land here we got permission to install using apt
-            apt install --yes --no-install-recommends $package_to_install
-        else
-            # Let the user figure it out
-            echo -e "\e[31;1m$package_to_install is not installed\e[0m\n"
-            echo -e "Install $package_to_install using your system package manager and then run this script again"
-            exit 1
+    # Allow for skipping dependency checks
+    if [[ "$SKIP_DEPENDENCY_CHECKS" -eq "true" ]]; then
+        echo -e "Skipping unbound-config dependency checks ...\n"
+    else
+        package_query="$(dpkg-query -W --showformat='${Status}\n' $package | grep "install ok installed")"
+        if [[ ! -n "$package_query" ]]; then
+            package_to_install="$package"
+            test_apt="$(dpkg-query -W --showformat='${Status}\n' apt | grep "install ok installed")"
+            if [[ -n "$test_apt" ]]; then
+                # We think we found apt
+                # Ask if we can use it to install what we need
+                action_text="install $package_to_install using apt now"
+                title_text="Required package $package_to_install not found"
+                confirm_action
+                # If we land here we got permission to install using apt
+                apt install --yes --no-install-recommends $package_to_install
+            else
+                # Let the user figure it out
+                echo -e "\e[31;1m$package_to_install is not installed\e[0m\n"
+                echo -e "Install $package_to_install using your system package manager or do"
+                echo -e "'export SKIP_DEPENDENCY_CHECKS=true' and then run this script again"
+                exit 1
+            fi
         fi
     fi
 }
@@ -419,17 +421,17 @@ test_architecture() {
     # devices may report unknown for this flag which is super helpful
     host_arch="$(uname -m)"
     echo -e "Testing host architecture ..."
-    if [[ "$host_arch" == "aarch64" ]]; then
-        # Host can use aarch64 binaries
+    if [[ "$host_arch" == "aarch64" ]] || [[ "$host_arch" == "armv8" ]]; then
+        # Host can probably use aarch64 binaries
         host_arch="aarch64"
     else
-        if [[ "$host_arch" == "armv7l" ]] || [[ "$host_arch" == "armv6l" ]]; then
-            # Host can use armhf binaries
+        if [[ "$host_arch" == "armhf" ]] || [[ "$host_arch" == "armv7l" ]] || [[ "$host_arch" == "armv6l" ]]; then
+            # Host can probably use armhf binaries
             host_arch="armhf"
         else
             # Neither aarch64 nor armhf
             echo -e "\nIncompatible host architecture"
-            echo -e "Supported host architectures: aarch64, armhf (armv6l, armv7l)\n"
+            echo -e "Supported host architectures: aarch64 (armv8), armhf (armv6l, armv7l)\n"
             echo -e "Your host architecture is $host_arch"
             exit 1
         fi
@@ -475,26 +477,81 @@ config_recommended() {
     echo -e "\t- Done\n"
     # Test CPU cores to see if we should enable multithreading
     echo -e "Determining number of CPU cores ..."
+    echo -e "\t- $test_cores CPU cores detected\n"
     if [[ "$test_cores" -gt "1" ]]; then
-        # Download multithreading.conf if there's more than one core
-        echo -e "\t- $test_cores CPU cores detected\n"
+        # Thread count must be divisible by two
+        if [[ $(( "test_cores" % 2 )) -eq "0" ]]; then
+            thread_count="$test_cores"
+        else
+            thread_count="$(( "$test_cores" - 1 ))"
+        fi
         echo -e "Installing multithreading.conf ..."
         wget -q --show-progress https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/multithreading.conf -P $unbound_config_dir
         echo -e "\t- Done\n"
-        # Adjust thread count
-        if [[ "$test_cores" -lt "4" ]]; then
-        echo -e "Adjusting multithreading thread count ..."
-        sed -i s'/threads: 4/threads: 2/'g $unbound_config_dir/multithreading.conf
-        echo -e "\t- Done\n"
+        # Due to diminishing returns, set a maximum of 16 cache slabs
+        # Slab count must be a power of two
+        if [[ "$thread_count" -ge "16" ]]; then
+             # Sixteen or greater threads
+             slab_count="16"
+             echo -e "Adjusting cache slab count ..."
+             sed -i s"/slabs: 4/slabs: $slab_count/"g $unbound_config_dir/caches.conf
+             echo -e "\t- Done"
+             echo -e "Number of cache slabs: $slab_count\n"
+             echo -e "Adjusting thread count ..."
+             sed -i s"/threads: 4/threads: $thread_count/"g $unbound_config_dir/multithreading.conf
+             echo -e "\t- Done"
+             echo -e "Number of threads: $thread_count\n"
+        else
+            if [[ "$thread_count" -ge "8" ]]; then
+                # Eight or greater threads, less than sixteen threads
+                # The closest power of two is eight
+                slab_count="8"
+                echo -e "Adjusting cache slab count ..."
+                sed -i s"/slabs: 4/slabs: $slab_count/"g $unbound_config_dir/caches.conf
+                echo -e "\t- Done"
+                echo -e "Number of cache slabs: $slab_count\n"
+                echo -e "Adjusting thread count ..."
+                sed -i s"/threads: 4/threads: $thread_count/"g $unbound_config_dir/multithreading.conf
+                echo -e "\t- Done"
+                echo -e "Number of threads: $thread_count\n"
+            else
+                # Four or greater threads, less than eight threads
+                if [[ "$thread_count" -ge "4" ]]; then
+                    # Four or greater threads, less than eight threads
+                    # The closest power of two is the default, four
+                    echo -e "Using unbound-config default 4 cache slabs ...\n"
+                    if [[ "$test_cores" -eq "4" ]]; then
+                        # Exactly four threads
+                        echo -e "Using unbound-config default 4 threads ...\n"
+                    else
+                        # Greater than four threads
+                        echo -e "Adjusting thread count ..."
+                        sed -i s"/threads: 4/threads: $thread_count/"g $unbound_config_dir/multithreading.conf
+                        echo -e "\t- Done"
+                        echo -e "Number of threads: $thread_count\n"
+                    fi
+                else
+                    # Less than four threads
+                    slab_count="2"
+                    echo -e "Adjusting cache slab count ..."
+                    sed -i s"/slabs: 4/slabs: $slab_count/"g $unbound_config_dir/caches.conf
+                    echo -e "\t- Done"
+                    echo -e "Number of cache slabs: $slab_count\n"
+                    echo -e "Adjusting thread count ..."
+                    sed -i s"/threads: 4/threads: $thread_count/"g $unbound_config_dir/multithreading.conf
+                    echo -e "\t- Done"
+                    echo -e "Number of threads: $thread_count\n"
+                fi
+            fi
         fi
     else
-        # Otherwise skip downloading multithreading.conf
-        echo -e "\t- $test_cores CPU core(s) detected\n"
+        # One (or undetectable) thread(s), err on the side of caution
+        slab_count="2"
         echo -e "Skipping multithreading.conf ...\n"
-        # And adjust the number of cache slabs we use
         echo -e "Adjusting cache slab count ..."
-        sed -i s'/slabs: 4/slabs: 2/'g $unbound_config_dir/caches.conf
-        echo -e "\t- Done\n"
+        sed -i s"/slabs: 4/slabs: $slab_count/"g $unbound_config_dir/caches.conf
+        echo -e "\t- Done"
+        echo -e "Number of cache slabs: $slab_count\n"
     fi
     echo -e "Installing prefetch.conf ..."
     wget -q --show-progress https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/prefetch.conf -P $unbound_config_dir
@@ -583,6 +640,7 @@ install_script() {
     # Make sure the installed unbound-config script is executable
     chmod +x $script_dir/unbound-config
     echo -e "\n\t - Done\n"
+    $script_dir/unbound-config --version
 }
 
 # Install unbound-config Unbound binaries

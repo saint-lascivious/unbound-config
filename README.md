@@ -226,9 +226,9 @@ Example output from "unbound -V" (aarch64 version):
 ```
 Version 1.13.3
 
-Configure line: --build=aarch64-linux-gnu --prefix=/usr --includedir=${prefix}/include --mandir=${prefix}/share/man --infodir=${prefix}/share/info --sysconfdir=/etc --localstatedir=/var --disable-option-checking --disable-silent-rules --libdir=${prefix}/lib/aarch64-linux-gnu --libexecdir=${prefix}/lib/aarch64-linux-gnu --disable-maintainer-mode --disable-dependency-tracking --disable-rpath --with-pidfile=/run/unbound.pid --with-rootkey-file=/var/lib/unbound/root.key --with-libevent --enable-subnet --enable-dnstap --enable-systemd --with-chroot-dir= --with-dnstap-socket-path=/run/dnstap.sock --libdir=/usr/lib --disable-flto --enable-cachedb --enable-dnscrypt --enable-ipsecmod --enable-ipset --enable-tfo-client --enable-tfo-server --with-libhiredis --with-libnghttp2
+Configure line: --build=aarch64-linux-gnu --prefix=/usr --includedir=${prefix}/include --mandir=${prefix}/share/man --infodir=${prefix}/share/info --sysconfdir=/etc --localstatedir=/var --disable-option-checking --disable-silent-rules --libdir=${prefix}/lib/aarch64-linux-gnu --libexecdir=${prefix}/lib/aarch64-linux-gnu --disable-maintainer-mode --disable-dependency-tracking --disable-rpath --with-pidfile=/run/unbound.pid --with-rootkey-file=/var/lib/unbound/root.key --with-libevent --with-pythonmodule --enable-subnet --enable-dnstap --enable-systemd --with-chroot-dir= --with-dnstap-socket-path=/run/dnstap.sock --libdir=/usr/lib --disable-flto --enable-cachedb --enable-dnscrypt --enable-ipsecmod --enable-ipset --enable-tfo-client --enable-tfo-server --with-libhiredis --with-libnghttp2
 Linked libs: libevent 2.1.12-stable (it uses epoll), OpenSSL 1.1.1j  16 Feb 2021
-Linked modules: dns64 cachedb ipsecmod subnetcache ipset respip validator iterator
+Linked modules: dns64 python cachedb ipsecmod subnetcache ipset respip validator iterator
 DNSCrypt feature available
 TCP Fastopen feature available
 
@@ -342,7 +342,7 @@ Where OPTION is one of
 
 
     -v                      Displays the unbound-config version
-    version                 Current unbound-config version v1.1.2
+    version                 Current unbound-config version v1.2
     --version
 ```
 
