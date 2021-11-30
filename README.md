@@ -218,7 +218,7 @@ wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/sc
 
 ## Source Compiled Unbound Binaries
 
-* What are they?
+* What Are They?
 
 I have compiled Unbound (and its associated toolset) from [source](https://github.com/NLnetLabs/unbound), with some additional features which may not be present in some distribution packages (cachedb, ipsecmod, ipset, DNSCrypt, TFO).
 
@@ -240,11 +240,11 @@ This is (very deliberately) almost identical to the Debian/Ubuntu unbound binary
 It is safe, but not necessarily recommended to replace the system unbound binaries with those provided.
 Any updates to the system package will remove the custom binary.
 
-* What do they run on?
+* What Platforms Do unbound-config Unbound Binaries Run On?
 
-At the present, aarch64 and armhf (armv6l, armv7l) binaries are provided. Only tested on Debian and Ubuntu derivaties.
+At the present, aarch64 (armv8) and armhf (armv6l, armv7l) binaries are provided. Only tested on Debian and Ubuntu derivaties.
 
-* Will you continue to update these binaries?
+* Will You Continue To Update unbound-config Unbound Binaries?
 
 Probably, yes.
 
@@ -344,6 +344,22 @@ Where OPTION is one of
     -v                      Displays the unbound-config version
     version                 Current unbound-config version v1.2
     --version
+```
+
+To skip dpkg-based dependency checking on possibly unsupported platforms, you can attempt to run unbound-config with dependency checking disabled using:
+```
+export SKIP_DEPENDENCY_CHECKS=true
+```
+Then run unbound-config as normal.
+
+Current unbound-config utility script dependencies:
+```
+init-system-helpers tar unbound wget whiptail
+```
+
+Required if installing unbound-config Unbound binaries:
+```
+libevent-dev
 ```
 
 ## Notes On Additional System Configuration
