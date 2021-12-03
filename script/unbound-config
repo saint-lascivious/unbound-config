@@ -3,10 +3,10 @@
 export LC_ALL=C
 
 # unbound-config version
-version="1.2"
+version="1.2.1"
 
-# Current major unbound-config Unbound binary version
-unbound_version="1.13.3"
+# Current unbound-config Unbound binary version
+unbound_version="1.14.0"
 
 # More Unbound vars
 unbound_dir="/usr/sbin"
@@ -391,7 +391,7 @@ service_handler() {
 test_package() {
     # Allow for skipping dependency checks
     if [[ "$SKIP_DEPENDENCY_CHECKS" -eq "true" ]]; then
-        echo -e "Skipping unbound-config dependency checks ...\n"
+        echo -e "[INFO] Skipping dependency check for $package ...\n"
     else
         package_query="$(dpkg-query -W --showformat='${Status}\n' $package | grep "install ok installed")"
         if [[ ! -n "$package_query" ]]; then
@@ -746,7 +746,8 @@ uninstall_unbound() {
 # The current user needs to be root or have access to sudo
 if [[ ! $EUID -eq 0 ]];then
     if [[ -x "$(command -v sudo)" ]]; then
-        exec sudo bash "$0" "$@"
+        # Preserve the environment when rerunning with sudo
+        exec sudo -E bash "$0" "$@"
         exit $?
     else
         echo -e "\e[31;1m\t- Run unbound-config as root or install sudo\e[0m\n"
