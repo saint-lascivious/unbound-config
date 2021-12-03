@@ -3,7 +3,7 @@
 export LC_ALL=C
 
 # unbound-config version
-version="1.2.1"
+version="1.2.2"
 
 # Current unbound-config Unbound binary version
 unbound_version="1.14.0"
@@ -390,7 +390,7 @@ service_handler() {
 # The ugliest dependency check you'll ever see
 test_package() {
     # Allow for skipping dependency checks
-    if [[ "$SKIP_DEPENDENCY_CHECKS" -eq "true" ]]; then
+    if [[ "$SKIP_DEPENDENCY_CHECKS" == "true" ]]; then
         echo -e "[INFO] Skipping dependency check for $package ...\n"
     else
         package_query="$(dpkg-query -W --showformat='${Status}\n' $package | grep "install ok installed")"

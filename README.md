@@ -342,24 +342,8 @@ Where OPTION is one of
 
 
     -v                      Displays the unbound-config version
-    version                 Current unbound-config version v1.2.1
+    version                 Current unbound-config version v1.2.2
     --version
-```
-
-To skip dpkg-based dependency checking on possibly unsupported platforms, you can attempt to run unbound-config with dependency checking disabled using:
-```
-export SKIP_DEPENDENCY_CHECKS=true
-```
-Then run unbound-config as normal.
-
-Current unbound-config utility script dependencies:
-```
-init-system-helpers tar unbound wget whiptail
-```
-
-Required if installing unbound-config Unbound binaries:
-```
-libevent-dev
 ```
 
 ## Notes On Additional System Configuration
