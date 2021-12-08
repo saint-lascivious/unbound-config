@@ -1,9 +1,14 @@
 #!/usr/bin/env bash
 
+# unbound-config
+
+# Hayden Pearce (saint-lascivious) 2021
+# saint@sainternet.xyz
+
 export LC_ALL=C
 
 # unbound-config version
-version="1.2.2"
+version="1.3"
 
 # Current unbound-config Unbound binary version
 unbound_version="1.14.0"
@@ -28,8 +33,9 @@ obnoxious_header() {
     echo -e "  | | | | '_ \\| '_ \ / _ \| | | | '_ \\ / _\` |____ / __/ _ \\| '_ \\| |_| |/ _\` |  "
     echo -e "  | |_| | | | | |_) | (_) | |_| | | | | (_| |____| (_| (_) | | | |  _| | (_| |  "
     echo -e "   \__,_|_| |_|_.__/ \___/ \__,_|_| |_|\__,_|     \___\___/|_| |_|_| |_|\__, |  "
-    echo -e "                                                                        |___/   \e[0m\n"
-    echo -e "      unbound-config: Configuration and management for NLnet Labs' Unbound\n"
+    echo -e "                                                                        |___/   \e[0m"
+    echo -e " v$version"
+    echo -e "         Configuration & Management Of NLnet Labs' Unbound DNS Resolver\n"
 }
 
 # The following is mostly scattered around in no particular order and needs a
@@ -84,7 +90,7 @@ backup_config() {
             test_package
             # Create the backup directory if it does not already exist
             if [[ ! -d "$unbound_config_dir-backup" ]]; then
-                echo -e "Creating Unbound configuration backup directory ..."
+                echo -e "Creating unbound-config backup directory ..."
                 mkdir $unbound_config_dir-backup
                 echo -e "\t- Done\n"
             fi
@@ -165,7 +171,7 @@ remove_config() {
             remove_config
         fi
     else
-        # No Unbound configuration backup directory exists
+        # No unbound-config backup directory exists
         title_text="A backup is required to $action_text"
         action_text="make a backup now"
         confirm_action
@@ -174,31 +180,64 @@ remove_config() {
     fi
 }
 
-delete_backups() {
-    obnoxious_header
+delete_backup() {
+    # See if there's any point running at all
     if [[ -d "$unbound_config_dir-backup" ]]; then
-        # There's an Unbound configuration backup directory present
+        # There's an unbound-config backup directory present
+        # Check if it's populated
         if [[ "$(ls -A $unbound_config_dir-backup)" ]]; then
-            # The backup Unbound configuration backup directory is populated
-            # Confirm we really want to do this
-            action_text="remove all Unbound configuration backups"
-            title_text="This command will $action_text"
-            confirm_action
-            echo -e "Removing Unbound configuration backup directory ..."
-            rm -fr $unbound_config_dir-backup
-            echo -e "\t- Done"
+            # The --delete-backup flag requires an argument
+            if [[ ! -n "$2" ]]; then
+                # There wasn't one
+                echo -e "The $1 flag requires a backup ID"
+                echo -e "You can use --list-backups to list possible backup IDs\n"
+                echo -e "Example: unbound-config $1 197001010000"
+                exit 1
+            else
+                obnoxious_header
+                # There was one, check it's something we recognise
+                backup_id="$2"
+                if [[ -f "$unbound_config_dir-backup/$backup_id.tar.gz" ]]; then
+                    # We found a matching backup ID
+                    # Make certain we want to delete it
+                    action_text="delete unbound-config backup ID $backup_id"
+                    title_text="This command will $action_text"
+                    confirm_action
+                    echo -e "Deleting unbound-config backup ID $backup_id ..."
+                    rm $unbound_config_dir-backup/$backup_id.tar.gz
+                    echo -e "\t- Done"
+                else
+                    if [[ "$backup_id" == "--all" ]]; then
+                        # We got the signal we want to delete everything
+                        # It still needs confirmation
+                        action_text="delete all unbound-config backups"
+                        title_text="This command will $action_text"
+                        confirm_action
+                        echo -e "Deleting unbound-config backup directory ..."
+                        rm -fr $unbound_config_dir-backup
+                        echo -e "\t- Done"
+                    else
+                        # Probably not a valid backup ID and not --all
+                        echo -e "Invalid unbound-config backup ID"
+                        echo -e "Use --list-backups to list possible backup IDs\n"
+                        echo -e "Example: unbound-config $1 197001010000"
+                        exit 0
+                    fi
+                fi
+            fi
         else
-            # We believe the Unbound configuration backup directory to be
-            # empty and therefore safe to remove without confirmation
-            echo -e "Removing Unbound configuration backup directory ..."
+            # We ain't found shit
+            echo -e "No unbound-config backups found in"
+            echo -e "$unbound_config_dir-backup"
+            echo -e "\nDeleting unbound-config backup directory without confirmation..."
             rm -fr $unbound_config_dir-backup
             echo -e "\t- Done"
         fi
     else
-        # No Unbound configuration backup directory exists
-        echo -e "No Unbound configuration backup directory found at"
+        # There's nothing to do here
+        echo -e "No unbound-config backup directory found at"
         echo -e "$unbound_config_dir-backup"
-        echo -e "\nCannot remove backups, no backup directory"
+        echo -e "\nCannot delete backup(s), no backup directory"
     fi
 }
 
@@ -211,17 +250,20 @@ list_backups() {
             # Backup directory is not empty
             echo -e "Listing backup IDs found in $unbound_config_dir-backup ...\n"
             # List the contents of the backup directory
-            ls -A1 $unbound_config_dir-backup | sed -e 's/\.tar.gz$//'
+            echo -e "$(ls -A1 $unbound_config_dir-backup | sed -e 's/\.tar.gz$//')"
+            # Append --all to the list of backup IDs to remind the user
+            # they can use it
+            echo -e "--all"
             echo -e "\n\t- Done\n"
         else
             # Backup directory is empty
-            echo -e "No Unbound configuration archives found in"
+            echo -e "No unbound-config backup IDs found in"
             echo -e "$unbound_config_dir-backup"
             echo -e "\nCannot list backup IDs, no backup IDs to list"
         fi
     else
-        # No Unbound configuration backup directory exists
-        echo -e "No Unbound configuration backup directory found at"
+        # No unbound-config backup directory exists
+        echo -e "No unbound-config backup directory found at"
         echo -e "$unbound_config_dir-backup"
         echo -e "\nCannot list backup IDs, no backup directory"
     fi
@@ -230,9 +272,9 @@ list_backups() {
 restore_backup() {
     # The --restore-backup flag requires an argument
     if [[ ! -n "$2" ]]; then
-        echo -e "This flag requires a backup ID"
-        echo -e "Use --list-backups to list possible backup IDs\n"
-        echo -e "Example: unbound-config --restore-backup 197001010000"
+        echo -e "The $1 flag requires a backup ID"
+        echo -e "You can use --list-backups to list possible backup IDs\n"
+        echo -e "Example: unbound-config $1 197001010000"
         exit 1
     fi
     obnoxious_header
@@ -242,16 +284,16 @@ restore_backup() {
         echo -e "Restoring Unbound configuration with backup ID $backup_id ...\n"
     else
         # Probably not a valid backup ID
-        echo -e "Invalid Unbound configuration backup ID"
+        echo -e "Invalid unbound-config backup ID"
         echo -e "Use --list-backups to list possible backup IDs\n"
-        echo -e "Example: unbound-config --restore-backup 197001010000"
+        echo -e "Example: unbound-config $1 197001010000"
         exit 0
     fi
     # Check for an Unbound configuration directory
     if [[ -d "$unbound_config_dir" ]]; then
         # An Unbound configuration directory exists
         if [[ -d "$unbound_config_dir-backup" ]]; then
-            # An Unbound configuration backup directory exists
+            # An unbound-config backup directory exists
             if [[ "$(ls -A $unbound_config_dir-backup)" ]]; then
                 # The backup directory exists and is not empty
                 # Test for tar before we try use it
@@ -265,18 +307,18 @@ restore_backup() {
                 rm -fr $unbound_config_dir/*
                 echo -e "\t- Done\n"
                 # Extract the archive to its destination
-                echo -e "Restoring Unbound configuration backup...\n"
+                echo -e "Restoring unbound-config backup ID $backup_id...\n"
                 tar -vzxf "$unbound_config_dir-backup/$backup_id.tar.gz" -C $unbound_config_dir
                 echo -e "\n\t- Done"
             else
                 # The backup directory is empty
-                echo -e "No Unbound configuration backups found in"
+                echo -e "No unbound-config backup IDs found in"
                 echo -e "$unbound_config_dir-backup"
                 echo -e "\nCannot restore backup, no backup to restore"
             fi
         else
-            # No Unbound configuration backup directory exists
-            echo -e "No Unbound configuration backup directory found at"
+            # No unbound-config backup directory exists
+            echo -e "No unbound-config backup directory found at"
             echo -e "$unbound_config_dir-backup"
             echo -e "\nCannot restore backup, no backup directory"
         fi
@@ -303,7 +345,7 @@ Where OPTION is one of
     --backup-config         $unbound_config_dir-backup
 
                             Takes an optional parameter to be normalised and
-                            used as the backup ID, strings containing spaces
+                            used as the backup ID, IDs containing spaces
                             must be quoted, e.g. "my unbound backup"
 
                             The default backup ID naming scheme is:
@@ -319,15 +361,19 @@ Where OPTION is one of
 
     -d                      Download unbound-config Unbound binaries in a
     download                .tar.gz archive to $temp_dir
-    --download-binaries
+    --download-unbound
                             Takes the optional parameter --force to remove an
                             existing binary package before downloading a new
                             one
 
 
-    -D                      Delete any Unbound configuration backups that
-    delete                  unbound-config --backup has made
-    --delete-backups
+    -D ID                   Delete an unbound-config backup with a specified
+    delete ID               backup ID
+    --delete-backup ID
+                            Use --list-backups to list possible backup IDs
+
+                            The --all flag may be provided in place of a
+                            backup ID to delete all unbound-config backups
 
 
     -h                      Display this help dialogue
@@ -351,7 +397,8 @@ Where OPTION is one of
     -l                      List possible backup IDs found in
     list                    $unbound_config_dir-backup
     --list-backups
-                            Useful for getting backup IDs for --restore-backup
+                            Useful for getting backup IDs for --delete-backup
+                            and --restore-backup
 
 
     -r                      Remove the current Unbound configuration
@@ -363,17 +410,16 @@ Where OPTION is one of
     -R ID                   Restore a backup of your Unbound configuration to
     restore ID              the Unbound configuration directory
     --restore-backup ID
-                            Use --list-backups to list possible backup IDs
 
 
     -u                      Uninstall any unbound binaries unbound-config may
     uninstall               have installed
-    --uninstall-binaries
+    --uninstall-unbound
 
 
     -v                      Displays the unbound-config version
-    version                 Current unbound-config version v$version
-    --version"
+    version
+    --version               Current unbound-config version v$version"
 }
 
 # Extremely basic service handler function
@@ -519,10 +565,10 @@ config_recommended() {
                 if [[ "$thread_count" -ge "4" ]]; then
                     # Four or greater threads, less than eight threads
                     # The closest power of two is the default, four
-                    echo -e "Using unbound-config default 4 cache slabs ...\n"
+                    echo -e "[INFO] Using unbound-config default 4 cache slabs ...\n"
                     if [[ "$test_cores" -eq "4" ]]; then
                         # Exactly four threads
-                        echo -e "Using unbound-config default 4 threads ...\n"
+                        echo -e "[INFO] Using unbound-config default 4 threads ...\n"
                     else
                         # Greater than four threads
                         echo -e "Adjusting thread count ..."
@@ -568,7 +614,7 @@ config_recommended() {
 }
 
 # Download unbound-config .tar.gz packaged Unbound binaries
-download_binaries() {
+download_unbound() {
     obnoxious_header
     # Add a parameter to allow forcing download of an unbound binary package
     # even if a current one already exists in the target directory
@@ -656,8 +702,8 @@ install_unbound() {
     test_package
     # Since there is a non-zero possibility we might get the chicken before the
     # egg, ensure a binary package exists
-    # download_binaries tests the architecture so we kill two, uh... chickens
-    download_binaries
+    # download_unbound tests the architecture so we kill two, uh... chickens
+    download_unbound
     title_text="This command will $action_text"
     confirm_action
     service_action="stop"
@@ -746,7 +792,7 @@ uninstall_unbound() {
 # The current user needs to be root or have access to sudo
 if [[ ! $EUID -eq 0 ]];then
     if [[ -x "$(command -v sudo)" ]]; then
-        # Preserve the environment when rerunning with sudo
+        # Preserve the environment when re-running with sudo
         exec sudo -E bash "$0" "$@"
         exit $?
     else
@@ -761,15 +807,15 @@ case "${1}" in
     # Very few arguments process strings themselves
     "-b" | "backup" | "--backup-config"         ) backup_config "$@" ;;
     "-c" | "config" | "--config-recommended"    ) config_recommended ;;
-    "-d" | "download" | "--download-binaries"   ) download_binaries "$@" ;;
-    "-D" | "delete" | "--delete-backups"        ) delete_backups ;;
+    "-d" | "download" | "--download-unbound"    ) download_unbound "$@" ;;
+    "-D" | "delete" | "--delete-backup"         ) delete_backup "$@" ;;
     "-h" | "help" | "--help"                    ) help_function ;;
     "-i" | "unbound" | "--install-unbound"      ) install_unbound ;;
     "-I" | "script" | "--install-script"        ) install_script ;;
     "-l" | "list" | "--list-backups"            ) list_backups  ;;
     "-r" | "remove" | "--remove-config"         ) remove_config ;;
     "-R" | "restore" | "--restore-backup"       ) restore_backup "$@" ;;
-    "-u" | "uninstall" | "--uninstall-binaries" ) uninstall_unbound ;;
+    "-u" | "uninstall" | "--uninstall-unbound"  ) uninstall_unbound ;;
     "-v" | "version" | "--version"              ) show_version ;;
 esac
 

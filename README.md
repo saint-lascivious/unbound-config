@@ -266,14 +266,12 @@ The full --help text for unbound-config is as follows:
 ```
 Usage: unbound-control OPTION
 
-Where OPTION is one of
-
     -b                      Backup the current Unbound configuration to a
     backup                  .tar.gz archive located within
     --backup-config         /etc/unbound/unbound.conf.d-backup
 
                             Takes an optional parameter to be normalised and
-                            used as the backup ID, strings containing spaces
+                            used as the backup ID, IDs containing spaces
                             must be quoted, e.g. "my unbound backup"
 
                             The default backup ID naming scheme is:
@@ -288,16 +286,20 @@ Where OPTION is one of
 
 
     -d                      Download unbound-config Unbound binaries in a
-    download                .tar.gz archive to $tmp
-    --download-binaries
+    download                .tar.gz archive to /tmp
+    --download-unbound
                             Takes the optional parameter --force to remove an
                             existing binary package before downloading a new
                             one
 
 
-    -D                      Delete any Unbound configuration backups that
-    delete                  unbound-config --backup has made
-    --delete-backups
+    -D ID                   Delete an unbound-config backup with a specified
+    delete ID               backup ID
+    --delete-backup ID
+                            Use --list-backups to list possible backup IDs
+
+                            The --all flag may be provided in place of a
+                            backup ID to delete all unbound-config backups
 
 
     -h                      Display this help dialogue
@@ -321,7 +323,8 @@ Where OPTION is one of
     -l                      List possible backup IDs found in
     list                    /etc/unbound/unbound.conf.d-backup
     --list-backups
-                            Useful for getting backup IDs for --restore-backup
+                            Useful for getting backup IDs for --delete-backup
+                            and --restore-backup
 
 
     -r                      Remove the current Unbound configuration
@@ -333,17 +336,16 @@ Where OPTION is one of
     -R ID                   Restore a backup of your Unbound configuration to
     restore ID              the Unbound configuration directory
     --restore-backup ID
-                            Use --list-backups to list possible backup IDs
 
 
     -u                      Uninstall any unbound binaries unbound-config may
     uninstall               have installed
-    --uninstall-binaries
+    --uninstall-unbound
 
 
     -v                      Displays the unbound-config version
-    version                 Current unbound-config version v1.2.2
-    --version
+    version
+    --version               Current unbound-config version v1.3
 ```
 
 ## Notes On Additional System Configuration
