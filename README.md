@@ -266,17 +266,16 @@ The full --help text for unbound-config is as follows:
 ```
 Usage: unbound-control OPTION
 
+Where OPTION is one of
+
     -b                      Backup the current Unbound configuration to a
     backup                  .tar.gz archive located within
     --backup-config         /etc/unbound/unbound.conf.d-backup
-
                             Takes an optional parameter to be normalised and
                             used as the backup ID, IDs containing spaces
                             must be quoted, e.g. "my unbound backup"
-
                             The default backup ID naming scheme is:
                             YYYYMMDDHHMM
-
 
     -c                      Install recommended unbound-config config
     config                  fragments:
@@ -284,34 +283,26 @@ Usage: unbound-control OPTION
                             Libevent, Multithreading, Prefetch, Private
                             Address Ranges, Verbosity
 
-
     -d                      Download unbound-config Unbound binaries in a
     download                .tar.gz archive to /tmp
-    --download-unbound
-                            Takes the optional parameter --force to remove an
+    --download-unbound      Takes the optional parameter --force to remove an
                             existing binary package before downloading a new
                             one
 
-
     -D ID                   Delete an unbound-config backup with a specified
     delete ID               backup ID
-    --delete-backup ID
-                            Use --list-backups to list possible backup IDs
-
+    --delete-backup ID      Use --list-backups to list possible backup IDs
                             The --all flag may be provided in place of a
                             backup ID to delete all unbound-config backups
-
 
     -h                      Display this help dialogue
     help
     --help
 
-
     -i                      Install unbound-config unbound binaries:
     unbound                 unbound, unbound-anchor, unbound-checkconf,
     --install-unbound       unbound-control, unbound-control-setup,
                             unbound-host
-
                             Takes the optional parameter --unbound-only to
                             install only the unbound binary
 
@@ -319,33 +310,26 @@ Usage: unbound-control OPTION
     script                  local storage, or update an existing locally
     --install-script        installed copy
 
-
     -l                      List possible backup IDs found in
     list                    /etc/unbound/unbound.conf.d-backup
-    --list-backups
-                            Useful for getting backup IDs for --delete-backup
+    --list-backups          Useful for getting backup IDs for --delete-backup
                             and --restore-backup
 
-
     -r                      Remove the current Unbound configuration
-    remove
-    --remove-config         A backup is required before removing any existing
-                            configuration, prompts for backup if none exist
-
+    remove                  A backup is required before removing any existing
+    --remove-config         configuration, prompts for backup if none exist
 
     -R ID                   Restore a backup of your Unbound configuration to
     restore ID              the Unbound configuration directory
     --restore-backup ID
 
-
     -u                      Uninstall any unbound binaries unbound-config may
     uninstall               have installed
     --uninstall-unbound
 
-
     -v                      Displays the unbound-config version
-    version
-    --version               Current unbound-config version v1.3.1
+    version                 Current unbound-config version v1.3.2
+    --version
 ```
 
 ## Notes On Additional System Configuration
