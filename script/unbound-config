@@ -8,7 +8,7 @@
 export LC_ALL=C
 
 # unbound-config version
-version="1.3"
+version="1.3.1"
 
 # Current unbound-config Unbound binary version
 unbound_version="1.14.0"
@@ -270,63 +270,67 @@ list_backups() {
 }
 
 restore_backup() {
-    # The --restore-backup flag requires an argument
-    if [[ ! -n "$2" ]]; then
-        echo -e "The $1 flag requires a backup ID"
-        echo -e "You can use --list-backups to list possible backup IDs\n"
-        echo -e "Example: unbound-config $1 197001010000"
-        exit 1
-    fi
-    obnoxious_header
-    # Check if the backup ID passed exists and restore it on success
-    backup_id="$2"
-    if [[ -f "$unbound_config_dir-backup/$backup_id.tar.gz" ]]; then
-        echo -e "Restoring Unbound configuration with backup ID $backup_id ...\n"
-    else
-        # Probably not a valid backup ID
-        echo -e "Invalid unbound-config backup ID"
-        echo -e "Use --list-backups to list possible backup IDs\n"
-        echo -e "Example: unbound-config $1 197001010000"
-        exit 0
-    fi
-    # Check for an Unbound configuration directory
-    if [[ -d "$unbound_config_dir" ]]; then
-        # An Unbound configuration directory exists
-        if [[ -d "$unbound_config_dir-backup" ]]; then
-            # An unbound-config backup directory exists
-            if [[ "$(ls -A $unbound_config_dir-backup)" ]]; then
-                # The backup directory exists and is not empty
-                # Test for tar before we try use it
-                package="tar"
-                test_package
-                action_text="restore a backup with ID $backup_id"
-                title_text="This command will $action_text"
-                confirm_action
-                echo -e "Removing current Unbound configuration if any exists..."
-                # If we are restoring a backup, first nuke any current config
-                rm -fr $unbound_config_dir/*
-                echo -e "\t- Done\n"
-                # Extract the archive to its destination
-                echo -e "Restoring unbound-config backup ID $backup_id...\n"
-                tar -vzxf "$unbound_config_dir-backup/$backup_id.tar.gz" -C $unbound_config_dir
-                echo -e "\n\t- Done"
+    # See if there's any point running at all
+    if [[ -d "$unbound_config_dir-backup" ]]; then
+        # There's an unbound-config backup directory present
+        # Check if it's populated
+        if [[ "$(ls -A $unbound_config_dir-backup)" ]]; then
+            # It's not empty, now we can get to work
+            # The --restore-backup flag requires an argument
+            if [[ ! -n "$2" ]]; then
+                # There wasn't one
+                echo -e "The $1 flag requires a backup ID"
+                echo -e "You can use --list-backups to list possible backup IDs\n"
+                echo -e "Example: unbound-config $1 197001010000"
+                exit 1
             else
-                # The backup directory is empty
-                echo -e "No unbound-config backup IDs found in"
-                echo -e "$unbound_config_dir-backup"
-                echo -e "\nCannot restore backup, no backup to restore"
+                # We got an argument
+                obnoxious_header
+                # Test the validity of the given argument
+                backup_id="$2"
+                if [[ -f "$unbound_config_dir-backup/$backup_id.tar.gz" ]]; then
+                    # The unbound-config backup directory is not empty
+                    # Make sure we have a destination to restore to
+                    if [[ -d "$unbound_config_dir" ]]; then
+                        # Test for tar before we try use it
+                        package="tar"
+                        test_package
+                        action_text="restore unbound-config backup ID $backup_id"
+                        title_text="This command will $action_text"
+                        confirm_action
+                        echo -e "Removing current Unbound configuration if any exists..."
+                        # If we are restoring a backup, first nuke any current config
+                        rm -fr $unbound_config_dir/*
+                        echo -e "\t- Done\n"
+                        # Extract the archive to its destination
+                        echo -e "Restoring unbound-config backup ID $backup_id...\n"
+                        tar -vzxf "$unbound_config_dir-backup/$backup_id.tar.gz" -C $unbound_config_dir
+                        echo -e "\n\t- Done"
+                    else
+                        # No Unbound configuration directory exists
+                        echo -e "No Unbound configuration directory found at"
+                        echo -e "$unbound_config_dir"
+                        echo -e "\nCannot restore backup, no configuration directory"
+                    fi
+                else
+                    # Probably not a valid backup ID
+                    echo -e "Invalid unbound-config backup ID"
+                    echo -e "Use --list-backups to list possible backup IDs\n"
+                    echo -e "Example: unbound-config $1 197001010000"
+                    exit 0
+                fi
             fi
         else
-            # No unbound-config backup directory exists
-            echo -e "No unbound-config backup directory found at"
+            # The backup directory is empty
+            echo -e "No unbound-config backup IDs found in"
             echo -e "$unbound_config_dir-backup"
-            echo -e "\nCannot restore backup, no backup directory"
+            echo -e "\nCannot restore backup, no backup to restore"
         fi
     else
-        # No Unbound configuration directory exists
-        echo -e "No Unbound configuration directory found at"
-        echo -e "$unbound_config_dir"
-        echo -e "\nCannot restore backup, no configuration directory"
+        # No unbound-config backup directory exists
+        echo -e "No unbound-config backup directory found at"
+        echo -e "$unbound_config_dir-backup"
+        echo -e "\nCannot restore backup, no backup directory"
     fi
 }
 

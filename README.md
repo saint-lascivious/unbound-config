@@ -345,7 +345,7 @@ Usage: unbound-control OPTION
 
     -v                      Displays the unbound-config version
     version
-    --version               Current unbound-config version v1.3
+    --version               Current unbound-config version v1.3.1
 ```
 
 ## Notes On Additional System Configuration
