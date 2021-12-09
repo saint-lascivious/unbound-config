@@ -8,7 +8,7 @@
 export LC_ALL=C
 
 # unbound-config version
-version="1.3.2"
+version="1.3.3"
 
 # Current unbound-config Unbound binary version
 unbound_version="1.14.0"
@@ -103,11 +103,23 @@ backup_config() {
             if [[ ! -n "$2" ]]; then
                 archive_name="$date_format.tar.gz"
             else
-                archive_name="$input_format.tar.gz"
+                if [[ "$2" == "--rfc3339" ]]; then
+                    # Optional rfc3339 compliant backup IDs
+                    # Date format breaks down to YYYY-MM-DDTHH:MM:SS-00:00
+                    # full date and full time separated by a capital T and
+                    # preprended by the local UTC offset
+                    date_format="$(date +%Y-%m-%dT%H:%M:S%:z)"
+                    archive_name="$date_format.tar.gz"
+                else
+                    # get rekt localisation
+                    # legal characters are "a-z A-Z 0-9 . _ -", anything else
+                    # is replaced by an underscore
+                    archive_name="$input_format.tar.gz"
+                fi
             fi
             # Strange tar dance to make an archive of just the target
             # directory contents without a skeleton parent directory structure
-            tar -czvf "$archive_name" -C $unbound_config_dir .
+            tar -czvf "$archive_name" -C $unbound_config_dir . --force-local
             echo -e "\n\t- Done\n"
             # Switch back to where we launched from
             cd $launch_dir
@@ -304,7 +316,7 @@ restore_backup() {
                         echo -e "\t- Done\n"
                         # Extract the archive to its destination
                         echo -e "Restoring unbound-config backup ID $backup_id...\n"
-                        tar -vzxf "$unbound_config_dir-backup/$backup_id.tar.gz" -C $unbound_config_dir
+                        tar -vzxf "$unbound_config_dir-backup/$backup_id.tar.gz" -C $unbound_config_dir --force-local
                         echo -e "\n\t- Done"
                     else
                         # No Unbound configuration directory exists
@@ -483,7 +495,7 @@ config_recommended() {
     test_package
     package="wget"
     test_package
-    action_text="install recommended Unbound config fragments"
+    action_text="install a recommended Unbound configuration"
     title_text="This command will $action_text"
     confirm_action
     # Backup first
@@ -641,14 +653,14 @@ install_script() {
             title_text="This command will $action_text"
             confirm_action
             # Even if we have to create it
-            mkdir $user_bin
-            chown $script_user:$script_user $user_bin
+            mkdir $user_bin_dir
+            chown $script_user:$script_user $user_bin_dir
         fi
         script_dir="$user_bin_dir"
         # We need to warn if the personal bin isn't in $PATH
         if [[ ":$PATH:" == *":$script_dir:"* ]]; then
              title_text="Personal bin directory created"
-             message_text="Please ensure the personal bin directory $script_dir exists in the system \$PATH.\n\nYou can add this path to your system \$PATH temporarily or as required using the following command:\nexport PATH=$user_bin:\$PATH"
+             message_text="Please ensure the personal bin directory $script_dir exists in the system \$PATH.\n\nYou can add this path to your system \$PATH temporarily or as required using the following command:\nexport PATH=$script_dir:\$PATH"
              message_box
         fi
     fi

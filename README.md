@@ -328,7 +328,7 @@ Where OPTION is one of
     --uninstall-unbound
 
     -v                      Displays the unbound-config version
-    version                 Current unbound-config version v1.3.2
+    version                 Current unbound-config version v1.3.3
     --version
 ```
 
