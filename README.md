@@ -264,18 +264,26 @@ A number of additional features are available via the unbound-config utility scr
 
 The full --help text for unbound-config is as follows:
 ```
-Usage: unbound-control OPTION
+Usage: unbound-control [OPTION [PARAM]]
 
 Where OPTION is one of
 
     -b                      Backup the current Unbound configuration to a
     backup                  .tar.gz archive located within
     --backup-config         /etc/unbound/unbound.conf.d-backup
+
                             Takes an optional parameter to be normalised and
                             used as the backup ID, IDs containing spaces
-                            must be quoted, e.g. "my unbound backup"
-                            The default backup ID naming scheme is:
+                            must be quoted, e.g. \"my unbound backup\"
+                            The default is a timestamp in the format:
                             YYYYMMDDHHMM
+
+                            If [--rfc3339] is used as the backup ID an rfc3339
+                            compliant timestamp will be used instead:
+                            YYYY-MM-DDTHH:MM:SS-00:00
+
+    examples:               unbound-config -b "my unbound backup"
+                            unbound-config -b --rfc3339
 
     -c                      Install recommended unbound-config config
     config                  fragments:
@@ -285,15 +293,21 @@ Where OPTION is one of
 
     -d                      Download unbound-config Unbound binaries in a
     download                .tar.gz archive to /tmp
-    --download-unbound      Takes the optional parameter --force to remove an
+    --download-unbound
+                            Takes an optional parameter [--force] to remove an
                             existing binary package before downloading a new
                             one
 
     -D ID                   Delete an unbound-config backup with a specified
     delete ID               backup ID
-    --delete-backup ID      Use --list-backups to list possible backup IDs
-                            The --all flag may be provided in place of a
+    --delete-backup ID
+                            Use --list-backups to list possible backup IDs
+
+                            The [--all] flag may be provided in place of a
                             backup ID to delete all unbound-config backups
+
+    examples:               unbound-config -D my_unbound_backup
+                            unbound-config -D --all
 
     -h                      Display this help dialogue
     help
@@ -303,8 +317,13 @@ Where OPTION is one of
     unbound                 unbound, unbound-anchor, unbound-checkconf,
     --install-unbound       unbound-control, unbound-control-setup,
                             unbound-host
-                            Takes the optional parameter --unbound-only to
+
+                            Takes an optional parameter [--unbound-only] to
                             install only the unbound binary
+
+                            Note: legacy unbound-checkconf and unbound-control
+                            may fail on more modern unbound configuration
+                            options
 
     -I                      Download and install the unbound-config script to
     script                  local storage, or update an existing locally
@@ -320,16 +339,18 @@ Where OPTION is one of
     --remove-config         configuration, prompts for backup if none exist
 
     -R ID                   Restore a backup of your Unbound configuration to
-    restore ID              the Unbound configuration directory
-    --restore-backup ID
+    restore ID              the Unbound configuration directory located at
+    --restore-backup ID     /etc/unbound/unbound.conf.d
+
+    example:                unbound-config -D my_unbound_backup
 
     -u                      Uninstall any unbound binaries unbound-config may
     uninstall               have installed
     --uninstall-unbound
 
     -v                      Displays the unbound-config version
-    version                 Current unbound-config version v1.3.3
-    --version
+    version
+    --version               Current unbound-config version v1.3.4
 ```
 
 ## Notes On Additional System Configuration
