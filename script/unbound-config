@@ -6,11 +6,8 @@
 
 export LC_ALL=C
 
-# unbound-config raw repository
-unbound_config_repository="https://raw.githubusercontent.com/saint-lascivious/unbound-config"
-
 # unbound-config version
-version="1.4"
+version="1.4.1"
 
 # Current unbound-config Unbound binary version
 unbound_version="1.14.1"
@@ -591,20 +588,20 @@ config_recommended() {
     remove_config
     #Install required unbound-config base config
     echo -e "Installing base.conf ..."
-    wget -q --show-progress "$unbound_config_repository/base.conf" -P "$unbound_config_dir"
+    wget -q --show-progress "https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/base.conf" -P "$unbound_config_dir"
     echo -e "\t- Done\n"
     # Install recommended unbound-config config fragments
     echo -e "Installing buffers.conf ..."
-    wget -q --show-progress "$unbound_config_repository/buffers.conf" -P "$unbound_config_dir"
+    wget -q --show-progress "https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/buffers.conf" -P "$unbound_config_dir"
     echo -e "\t- Done\n"
     echo -e "Installing caches.conf ..."
-    wget -q --show-progress "$unbound_config_repository/caches.conf" -P "$unbound_config_dir"
+    wget -q --show-progress "https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/caches.conf" -P "$unbound_config_dir"
     echo -e "\t- Done\n"
     echo -e "Installing hardening.conf ..."
-    wget -q --show-progress "$unbound_config_repository/hardening.conf" -P "$unbound_config_dir"
+    wget -q --show-progress "https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/hardening.conf" -P "$unbound_config_dir"
     echo -e "\t- Done\n"
     echo -e "Installing libevent.conf ..."
-    wget -q --show-progress "$unbound_config_repository/libevent.conf" -P "$unbound_config_dir"
+    wget -q --show-progress "https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/libevent.conf" -P "$unbound_config_dir"
     echo -e "\t- Done\n"
     # Test CPU cores to see if we should enable multithreading
     echo -e "Determining number of CPU cores ..."
@@ -617,7 +614,7 @@ config_recommended() {
             thread_count="$(( "$test_cores" - 1 ))"
         fi
         echo -e "Installing multithreading.conf ..."
-        wget -q --show-progress "$unbound_config_repository/multithreading.conf" -P "$unbound_config_dir"
+        wget -q --show-progress "https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/multithreading.conf" -P "$unbound_config_dir"
         echo -e "\t- Done\n"
         # Due to diminishing returns, set a maximum of 16 cache slabs
         # Slab count must be a power of two
@@ -686,13 +683,13 @@ config_recommended() {
         echo -e "Number of cache slabs: $slab_count\n"
     fi
     echo -e "Installing prefetch.conf ..."
-    wget -q --show-progress "$unbound_config_repository/prefetch.conf" -P "$unbound_config_dir"
+    wget -q --show-progress "https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/prefetch.conf" -P "$unbound_config_dir"
     echo -e "\t- Done\n"
     echo -e "Installing private-ranges.conf ..."
-    wget -q --show-progress "$unbound_config_repository/private-ranges.conf" -P "$unbound_config_dir"
+    wget -q --show-progress "https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/private-ranges.conf" -P "$unbound_config_dir"
     echo -e "\t- Done\n"
     echo -e "Installing verbosity.conf ..."
-    wget -q --show-progress "$unbound_config_repository/verbosity.conf" -P "$unbound_config_dir"
+    wget -q --show-progress "https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/verbosity.conf" -P "$unbound_config_dir"
     echo -e "\t- Done\n"
     service_action="restart"
     service="unbound"
@@ -718,10 +715,10 @@ download_unbound() {
     # Use test_arch result to determine which package to download
     echo -e "Downloading unbound-config Unbound binaries for $host_arch ..."
     # Download if newer or nonexisting
-    wget -c -nv -N -q --show-progress "$unbound_config_repository/binaries/$host_arch/unbound-$unbound_version.tar.gz" -P "$temp_dir"
+    wget -c -nv -N -q --show-progress "https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/binaries/$host_arch/unbound-$unbound_version.tar.gz" -P "$temp_dir"
     echo -e "\t- Done\n"
     echo -e "Extracting unbound-$unbound_version.tar.gz to $temp_dir ...\n"
-    tar -vzxf "$temp_dir/unbound-$unbound_version.tar.gz" -C "$temp_dir"
+    tar -vzxf $temp_dir/unbound-$unbound_version.tar.gz -C $temp_dir
     echo -e "\n\t- Done\n"
 }
 
