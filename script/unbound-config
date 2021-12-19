@@ -7,7 +7,7 @@
 export LC_ALL=C
 
 # unbound-config version
-version="1.4.1"
+version="1.4.2"
 
 # Current unbound-config Unbound binary version
 unbound_version="1.14.1"
@@ -165,7 +165,7 @@ remove_config() {
                     echo -e "Removing current Unbound configuration ..."
                     # It's probably safe to clear the configuration directory
                     # Make sure the wildcard doesn't expand to anything spicy
-                    rm -fr ${unbound_config_dir/*}
+                    rm -fr ${unbound_config_dir}/*
                     echo -e "\t- Done\n"
                 else
                     # No Unbound configuration exists
