@@ -1,20 +1,22 @@
 # unbound-config
 
+
 ## About
 
-Originally designed purely for personal use, unbound-config is a project that has evolved around the configuration and management of NLnet Labs' [Unbound](https://nlnetlabs.nl/projects/unbound/about/) recursive nameserver.
+Originally designed purely for personal use, unbound-config is a project that has evolved around the configuration and management of NLnet Labs' [Unbound](https://nlnetlabs.nl/projects/unbound/about/) recursive nameserver. There are three main components of this repository.
 
-* Configuration Files
+* Modulur Unbound Configuration Files
 
-A set of modular configuration files are offered including a base.conf (required), and multiple optional configuration files adding or defining additional functionality. Intended to serve as a working basis for further configuration while providing reasonably sane defaults, many values supplied are in fact current default values. Constant expirimentation in this area and the want for a ulitility to assist with backup and restore of different configuration profiles during testing lead to the following.
+A range of modular configuration files is offered including a base.conf (required), and multiple optional configuration files adding or defining additional functionality. Intended to serve as a working basis for further configuration while providing reasonably sane defaults, many values supplied are in fact current default values. Constant expirimentation in this area and the want for a ulitility to assist with backup and restore of different configuration profiles during testing lead to the creation and adaptation of the following...
 
 * Utility Script
 
-Perhaps confusingly named, unbound-config is also a general management and utility script for Unbound. This utility offers a range of functions including creation, listing, and restoration of Unbound configuration backups, and the ability to install a set of recommended unbound-config configuration files. This part of the project started from an installtion script, that was dumb as a sack of rocks, originally packaged exclusively with the following.
+Perhaps confusingly named, unbound-config is also a general management and utility script for Unbound. This utility offers a range of functions including creation, listing, and restoration of Unbound configuration backups, and the ability to install a set of recommended unbound-config configuration files. This part of the project started from an installtion script, that was dumb as a sack of rocks, originally packaged exclusively with the following...
 
 * Unbound Binaries
 
 Finding limitation in the Unbound binaries distributed via various system package managers, I found myself compiling from source regularly. I would also regularly find users of this project and others frustrated by either the lack of modules, updates, or both in their system package manager's Unbound binaries eventually leading to my distributing a set of periodically updated Unbound binaries compiled from the latest Unbound via this repository.
+
 
 ## Usage
 
@@ -202,6 +204,7 @@ After any changes to the server configuration the server must be restarted.
 sudo service unbound restart
 ```
 
+
 ## Alternative Install Method
 
  * Automated Installation
@@ -216,6 +219,7 @@ wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/sc
 /tmp/unbound-config --config-recommended
 ```
 
+
 ## Source Compiled Unbound Binaries
 
 * What Are They?
@@ -224,7 +228,7 @@ I have compiled Unbound (and its associated toolset) from [source](https://githu
 
 Example output from "unbound -V" (aarch64 version):
 ```
-Version 1.14.0
+Version 1.14.1
 
 Configure line: --build=aarch64-linux-gnu --prefix=/usr --includedir=${prefix}/include --mandir=${prefix}/share/man --infodir=${prefix}/share/info --sysconfdir=/etc --localstatedir=/var --disable-option-checking --disable-silent-rules --libdir=${prefix}/lib/aarch64-linux-gnu --libexecdir=${prefix}/lib/aarch64-linux-gnu --disable-maintainer-mode --disable-dependency-tracking --disable-rpath --with-pidfile=/run/unbound.pid --with-rootkey-file=/var/lib/unbound/root.key --with-libevent --with-pythonmodule --enable-subnet --enable-dnstap --enable-systemd --with-chroot-dir= --with-dnstap-socket-path=/run/dnstap.sock --libdir=/usr/lib --disable-flto --enable-cachedb --enable-dnscrypt --enable-ipsecmod --enable-ipset --enable-tfo-client --enable-tfo-server --with-libhiredis --with-libnghttp2
 Linked libs: libevent 2.1.12-stable (it uses epoll), OpenSSL 1.1.1j  16 Feb 2021
@@ -248,6 +252,7 @@ At the present, aarch64 (armv8) and armhf (armv6l, armv7l) binaries are provided
 
 Probably, yes.
 
+
 ## Download And Install unbound-config Unbound Binaries
 
 Download and install unbound-config Unbound binaries using the unbound-config utility script.
@@ -258,21 +263,20 @@ wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/sc
 /tmp/unbound-config --install-unbound
 ```
 
+
 ## Additional unbound-config Features
 
 A number of additional features are available via the unbound-config utility script.
 
 The full --help text for unbound-config is as follows:
 ```
-Usage: unbound-control [OPTION [PARAM]]
-
-Where OPTION is one of
+Where OPTION is one (1) of
 
     -b                      Backup the current Unbound configuration to a
     backup                  .tar.gz archive located within
     --backup-config         /etc/unbound/unbound.conf.d-backup
 
-                            Takes an optional parameter to be normalised and
+                            Takes an optional parameter (to be normalised and)
                             used as the backup ID, IDs containing spaces
                             must be quoted, e.g. \"my unbound backup\"
                             The default is a timestamp in the format:
@@ -280,10 +284,10 @@ Where OPTION is one of
 
                             If [--rfc3339] is used as the backup ID an rfc3339
                             compliant timestamp will be used instead:
-                            YYYY-MM-DDTHH:MM:SS-00:00
+                            YYYY-MM-DDTHH:MM:SS±00:00
 
-    examples:               unbound-config -b "my unbound backup"
-                            unbound-config -b --rfc3339
+    examples:               unbound-config --backup-config \"my unbound backup\"
+                            unbound-config --backup-config --rfc3339
 
     -c                      Install recommended unbound-config config
     config                  fragments:
@@ -306,8 +310,8 @@ Where OPTION is one of
                             The [--all] flag may be provided in place of a
                             backup ID to delete all unbound-config backups
 
-    examples:               unbound-config -D my_unbound_backup
-                            unbound-config -D --all
+    examples:               unbound-config --delete-backup my_unbound_backup
+                            unbound-config --delete-backup --all
 
     -h                      Display this help dialogue
     help
@@ -325,6 +329,9 @@ Where OPTION is one of
                             may fail on more modern unbound configuration
                             options
 
+    examples:               unbound-config --install-unbound
+                            unbound-config --install-unbound --unbound-only
+
     -I                      Download and install the unbound-config script to
     script                  local storage, or update an existing locally
     --install-script        installed copy
@@ -338,11 +345,20 @@ Where OPTION is one of
     remove                  A backup is required before removing any existing
     --remove-config         configuration, prompts for backup if none exist
 
+    -r                      Remove the current Unbound configuration
+    remove                  A backup is required before removing any existing
+    --remove-config         configuration, prompts for backup if none exist
+
     -R ID                   Restore a backup of your Unbound configuration to
     restore ID              the Unbound configuration directory located at
     --restore-backup ID     /etc/unbound/unbound.conf.d
 
-    example:                unbound-config -D my_unbound_backup
+    example:                unbound-config --restore-backup my_unbound_backup
+
+    -t                      Test the validated resolution capabilities of the
+    test                    local Unbound installation by querying external
+    --test-unbound          domains with known broken and known good DNSSEC
+                            records
 
     -u                      Uninstall any unbound binaries unbound-config may
     uninstall               have installed
@@ -350,8 +366,43 @@ Where OPTION is one of
 
     -v                      Displays the unbound-config version
     version
-    --version               Current unbound-config version v1.3.4
+    --version               Current unbound-config version v1.4
 ```
+
+The full list of unbound-config dependencies is as follows:
+```
+dpkg init-system-helpers libevent-dev sudo tar unbound wget whiptail
+```
+```
+    Package:                Explanation:
+
+    dpkg                    dpkg-query is used to test for the presence of
+                            dependencies as required when required
+
+    init-system-helpers     Used for unbound service management
+
+    libevent-dev            Used in recommended config for large potentially
+                            very large outgoing port ranges
+                            Will not notably impact performance
+                            Unused in the absence of libevent.conf
+
+    sudo                    Used for priveleged system access if the user is
+                            not root
+
+    tar                     Used in the creation and extraction of .tar.gz
+                            archives processed by unbound-config
+
+    unbound                 Expected to exist for configuration and/or
+                            providing the init system for unbound-config
+                            provided Unbound binaries
+
+    wget                    Used for downloading unbound-config unbound binary
+                            archives and configuration fragments
+
+    whiptail                Used for the display of interactive terminal user
+                            confirmation prompts and notices
+```
+
 
 ## Notes On Additional System Configuration
 
@@ -390,6 +441,11 @@ Any of these flags can also be enabled without restarting by using
 ```
 sudo sysctl FLAG=VALUE
 ```
+Example:
+```
+sudo sysctl vm.overcommit_memory=1
+```
+
 
 ## Contact
 
