@@ -1,9 +1,13 @@
 # unbound-config
 
+Configuration & Management Of [NLnet Labs](https://www.nlnetlabs.nl/)' Unbound DNS Resolver
+
 
 ## About
 
-Originally designed purely for personal use, unbound-config is a project that has evolved around the configuration and management of NLnet Labs' [Unbound](https://nlnetlabs.nl/projects/unbound/about/) recursive nameserver. There are three main components of this repository.
+Originally designed purely for personal use, unbound-config is a project that has evolved around the configuration and management of NLnet Labs' [Unbound](https://nlnetlabs.nl/projects/unbound/about/) recursive nameserver ([source](https://github.com/NLnetLabs/unbound/commits/master)).
+
+Three shall be the number thou shalt count, and the number of components in this repository shall be three. Four shalt thou not count, neither count thou two, excepting that thou then proceed to three. Five is right out!
 
 * Modulur Unbound Configuration Files
 
@@ -289,11 +293,12 @@ Where OPTION is one (1) of
     examples:               unbound-config --backup-config \"my unbound backup\"
                             unbound-config --backup-config --rfc3339
 
-    -c                      Install recommended unbound-config config
-    config                  fragments:
-    --config-recommended    Base (Required) Buffers, Caches, Hardening,
-                            Libevent, Multithreading, Prefetch, Private
-                            Address Ranges, Verbosity
+    -C                      Install and configure a 16MB Redis persistent
+    cachedb                 cache database with an LRU eviction policy for
+    --configure-cachedb     use with the Unbound cachedb module
+
+                            Your Unbound binaries probably don't support this
+                            but unbound-config Unbound binaries do
 
     -d                      Download unbound-config Unbound binaries in a
     download                .tar.gz archive to /tmp
@@ -366,12 +371,12 @@ Where OPTION is one (1) of
 
     -v                      Displays the unbound-config version
     version
-    --version               Current unbound-config version v1.4.2
+    --version               Current unbound-config version v1.5
 ```
 
 The full list of unbound-config dependencies is as follows:
 ```
-dpkg init-system-helpers libevent-dev sudo tar unbound wget whiptail
+dpkg init-system-helpers libevent-dev libhiredis-dev redis-server sudo tar unbound wget whiptail
 ```
 ```
     Package:                Explanation:
@@ -385,6 +390,10 @@ dpkg init-system-helpers libevent-dev sudo tar unbound wget whiptail
                             very large outgoing port ranges
                             Will not notably impact performance
                             Unused in the absence of libevent.conf
+
+    libhiredis-dev          Used for Redis database backend cachedb access
+
+    redis-server            Used for providing a Redis database
 
     sudo                    Used for priveleged system access if the user is
                             not root

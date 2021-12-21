@@ -7,7 +7,7 @@
 export LC_ALL=C
 
 # unbound-config version
-version="1.4.2"
+version="1.5"
 
 # Current unbound-config Unbound binary version
 unbound_version="1.14.1"
@@ -79,7 +79,7 @@ message_box() {
 
 # Backup the current Unbound configuration if it exists
 backup_config() {
-    obnoxious_header
+
     # Date format breaks down to YYYYMMDDHHMM
     # Sortable universal datetime
     date_format="$(date +%Y%m%d%H%M)"
@@ -138,7 +138,7 @@ backup_config() {
             echo -e "$unbound_config_dir"
             echo -e "\nCannot backup Unbound configuration, no configuration to backup"
         fi
-        else
+    else
         # There is no Unbound configuartion directory so there is nothing
         # to archive
         echo -e "No Unbound configuration directory exists at"
@@ -150,7 +150,6 @@ backup_config() {
 # Offer to remove the current Unbound configuration if it exists but force
 # a backup flow in order to do it
 remove_config() {
-    obnoxious_header
     action_text="remove Unbound's current configuration"
     if [[ -d "$unbound_config_dir-backup" ]]; then
         # A backup directory exists, check if there are any archives
@@ -212,7 +211,6 @@ delete_backup() {
                 echo -e "Example: unbound-config $1 197001010000"
                 exit 1
             else
-                obnoxious_header
                 # There was one, check it's something we recognise
                 backup_id="$2"
                 if [[ -f "$unbound_config_dir-backup/$backup_id.tar.gz" ]]; then
@@ -264,7 +262,6 @@ delete_backup() {
 }
 
 list_backups() {
-    obnoxious_header
     # Check for a backup directory
     if [[ -d "$unbound_config_dir-backup" ]]; then
         # A backup directory exists, check if there are any archives
@@ -307,7 +304,6 @@ restore_backup() {
                 exit 1
             else
                 # We got an argument
-                obnoxious_header
                 # Test the validity of the given argument
                 backup_id="$2"
                 if [[ -f "$unbound_config_dir-backup/$backup_id.tar.gz" ]]; then
@@ -392,6 +388,13 @@ Where OPTION is one (1) of
                             Libevent, Multithreading, Prefetch, Private
                             Address Ranges, Verbosity
 
+    -C                      Install and configure a 16MB Redis persistent
+    cachedb                 cache database with an LRU eviction policy for
+    --configure-cachedb     use with the Unbound cachedb module
+
+                            Your Unbound binaries probably don't support this
+                            but unbound-config Unbound binaries do
+
     -d                      Download unbound-config Unbound binaries in a
     download                .tar.gz archive to $temp_dir
     --download-unbound
@@ -460,6 +463,7 @@ Where OPTION is one (1) of
     -v                      Displays the unbound-config version
     version
     --version               Current unbound-config version v$version"
+    exit 0
 }
 
 # Extremely basic service handler function
@@ -540,7 +544,7 @@ test_architecture() {
 }
 
 test_unbound() {
-    obnoxious_header
+    # We need dig for this
     package="dnsutils"
     test_package
     dnssec_sigfail="$(dig sigfail.verteiltesysteme.net @127.0.0.1 -p 5335 | grep "SERVFAIL" )"
@@ -569,7 +573,7 @@ test_unbound() {
 
 # Install unbound-config recommended configuration fragments
 config_recommended() {
-    obnoxious_header
+    # We need to know this for later
     test_cores="$(grep -c ^processor /proc/cpuinfo)"
     # Test if it even makes any sense to install this config
     package="unbound"
@@ -698,7 +702,6 @@ config_recommended() {
 
 # Download unbound-config .tar.gz packaged Unbound binaries
 download_unbound() {
-    obnoxious_header
     # Add a parameter to allow forcing download of an unbound binary package
     # even if a current one already exists in the target directory
     if [[ "$2" == "--force" ]]; then
@@ -720,6 +723,81 @@ download_unbound() {
     echo -e "Extracting unbound-$unbound_version.tar.gz to $temp_dir ...\n"
     tar -vzxf $temp_dir/unbound-$unbound_version.tar.gz -C $temp_dir
     echo -e "\n\t- Done\n"
+}
+
+configure_cachedb() {
+    # Confirm we really want to do this
+    action_text="install and configure a Redis cachedb backend"
+    title_text="This command will $action_text"
+    confirm_action
+    package="unbound"
+    test_package
+    # Test if we know where to configure Unbound
+    if [[ -d "$unbound_config_dir" ]]; then
+        package="wget"
+        test_package
+        # Install Redis cachedb dependencies
+        package="redis-server"
+        test_package
+        package="libhiredis-dev"
+        test_package
+        # We should be able to find the Redis configuration here
+        redis_conf="/etc/redis/redis.conf"
+        # We still need to test for it though
+        if [[ -f "$redis_conf" ]]; then
+            # We know where to configure both Unbound and Redis
+            # so lets try
+            package="wget"
+            test_package
+            # Install Unbound module config
+            echo -e "Installing module-config.conf ..."
+            wget -q --show-progress "https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/module-config.conf" -P "$unbound_config_dir"
+            echo -e "\t- Done\n"
+            # Install our Redis configuration
+            echo -e "Installing redis.conf ..."
+            wget -q --show-progress "https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/redis.conf" -P "$unbound_config_dir"
+            echo -e "\t- Done\n"
+            # Make Redis provide a single small persistent cache database
+            sed -i '/databases 16/s/^/#/g' "$redis_conf"
+            sed -i '/#databases 16/a databases 1' "$redis_conf"
+            # No need for this
+            sed -i '/always-show-logo yes/s/^/#/g' "$redis_conf"
+            sed -i '/#always-show-logo yes/a always-show-logo no' "$redis_conf"
+            # It's not a tragedy if a bgsave fails
+            sed -i '/stop-writes-on-bgsave-error yes/s/^/#/g' "$redis_conf"
+            sed -i '/#stop-writes-on-bgsave-error yes/a stop-writes-on-bgsave-error no' "$redis_conf"
+            # Not resource intensive at all
+            sed -i '/rdbcompression yes/s/^/#/g' "$redis_conf"
+            sed -i '/#rdbcompression yes/a rdbcompression no' "$redis_conf"
+            # 16M allows for approximately 20K key entries
+            sed -i '/# maxmemory <bytes>/a maxmemory 16M' "$redis_conf"
+            # Evict keys on a Least Recently Used basis when necessary
+            sed -i '/# maxmemory-policy noeviction/a maxmemory-policy allkeys-lru' "$redis_conf"
+            # Unnecessaryily large for our needs
+            sed -i '/slowlog-max-len 128/s/^/#/g' "$redis_conf"
+            sed -i '/#slowlog-max-len 128/a slowlog-max-len 16' "$redis_conf"
+            # Logging is very disk intensive
+            sed -i '/logfile \/var\/log\/redis\/redis-server.log/s/^/#/g' "$redis_conf"
+            # Restart both Redis and Unbound services so they pick up our changes
+            service_action="restart"
+            # Redis first
+            service="redis"
+            service_handler
+            # Now unbound
+            service="unbound"
+            service_handler
+        else
+            # No redis server configuration found
+            echo -e "No Redis configuration exists at"
+            echo -e "$redis_conf"
+            echo -e "\nCannot configure cachedb, no Redis configuration"
+        fi
+    else
+        # There is no Unbound configuartion directory
+        echo -e "No Unbound configuration directory exists at"
+        echo -e "$unbound_config_dir"
+        echo -e "\nCannot configure cachedb, no configuration directory"
+    fi
 }
 
 install_script() {
@@ -776,12 +854,10 @@ install_script() {
         chmod +x "$script_dir/unbound-config"
     fi
     echo -e "\n\t - Done\n"
-    "$script_dir/unbound-config" --version
 }
 
 # Install unbound-config Unbound binaries
 install_unbound() {
-    obnoxious_header
     # Use the system package manager's setup of Unbound
     # (seems counterintuitive I know, but we use the package manager's init system)
     action_text="install unbound-config Unbound binaries"
@@ -831,7 +907,6 @@ install_unbound() {
 
 # Uninstall unbound-config Unbound binaries
 uninstall_unbound() {
-    obnoxious_header
     package="unbound"
     test_package
     action_text="uninstall unbound-config Unbound binaries"
@@ -880,22 +955,6 @@ uninstall_unbound() {
     message_box
 }
 
-# The current user needs to be root or have access to sudo
-if [[ ! "$EUID" -eq "0" ]];then
-    # Make sure sudo is installed
-    package="sudo"
-    test_package
-    if [[ -x "$(command -v sudo)" ]]; then
-        # Preserve the environment when re-running with sudo
-        exec sudo -E bash "$0" "$@"
-        exit "$?"
-    else
-        echo -e "\e[31;1m\t- Run unbound-config as root or install sudo\e[0m\n"
-        echo -e "\t- Aborting"
-        exit 1
-    fi
-fi
-
 # Define the options unbound-config accepts and assign their function
 case "${1}" in
     # These functions process arguments themselves
@@ -906,6 +965,7 @@ case "${1}" in
     "-R" | "restore" | "--restore-backup"       ) restore_backup "$@" ;;
     # These ones don't
     "-c" | "config" | "--config-recommended"    ) config_recommended ;;
+    "-C" | "cachedb" | "--configure-cachedb"    ) configure_cachedb ;;
     "-h" | "help" | "--help"                    ) help_function ;;
     "-I" | "script" | "--install-script"        ) install_script ;;
     "-l" | "list" | "--list-backups"            ) list_backups  ;;
@@ -921,4 +981,24 @@ if [[ -z "$1" ]]; then
    # Xzibit (Alvin Nathaniel Joiner) - Probably never
    echo -e "unbound-config v$version requires one or more flags to operate"
    echo -e "Use 'unbound-config --help' for detailed help information"
+   exit 0
+fi
+
+# The current user needs to be root or have access to sudo
+if [[ ! "$EUID" -eq "0" ]];then
+    # Make sure sudo is installed
+    package="sudo"
+    test_package
+    if [[ -x "$(command -v sudo)" ]]; then
+        # Preserve the environment when re-running with sudo
+        exec sudo -E bash "$0" "$@"
+        exit "$?"
+    else
+        echo -e "\e[31;1m\t- Run unbound-config as root or install sudo\e[0m\n"
+        echo -e "\t- Aborting"
+        exit 1
+    fi
+else
+    # Only do this once
+    obnoxious_header
 fi
