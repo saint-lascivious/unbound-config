@@ -40,7 +40,7 @@ Note: You will be prompted to install any unmet dependencies as they are require
 
 Base (Required)
 ```
-sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/base.conf
+sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/configs/base.conf
 ```
 
 * Download Additonal Config Fragments As Required
@@ -49,59 +49,59 @@ Note: Recommended configuration fragments are marked as such.
 
 Access Control
 ```
-sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/access-control.conf
+sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/configs/access-control.conf
 ```
 Automatic Interface
 ```
-sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/auto-interface.conf
+sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/configs/auto-interface.conf
 ```
 Buffers (Recommended)
 
 Note: See notes on additional system configuration below.
 ```
-sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/buffers.conf
+sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/configs/buffers.conf
 ```
 Caches (Recommended)
 ```
-sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/caches.conf
+sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/configs/caches.conf
 ```
 Cache TTL
 ```
-sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/cache-ttl.conf
+sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/configs/cache-ttl.conf
 ```
 Address Capitalization Randomization
 ```
-sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/caps-for-id.conf
+sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/configs/caps-for-id.conf
 ```
 Deny ANY Requests
 ```
-sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/deny-any.conf
+sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/configs/deny-any.conf
 ```
 DNS64 (Requires NAT64 Gateway)
 
 Note: You probably don't have a NAT64 Gateway.
 ```
-sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/dns64.conf
+sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/configs/dns64.conf
 ```
 EDNS Buffer
 ```
-sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/edns-buffer.conf
+sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/configs/edns-buffer.conf
 ```
 Fast Servers
 ```
-sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/fast-server.conf
+sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/configs/fast-server.conf
 ```
 Fetch Policy
 ```
-sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/fetch-policy.conf
+sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/configs/fetch-policy.conf
 ```
 Hardening (Recommended)
 ```
-sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/hardening.conf
+sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/configs/hardening.conf
 ```
 IPv6
 ```
-sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/ipv6.conf
+sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/configs/ipv6.conf
 ```
 Libevent (Recommended)
 
@@ -110,43 +110,43 @@ Note: Requires installation of libevent-dev on the Unbound host.
 sudo apt install libevent-dev
 ```
 ```
-sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/libevent.conf
+sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/configs/libevent.conf
 ```
 Local Records
 
 Note: Example Only - Must be edited, contains deliberately garbage values.
 ```
-sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/local-records.conf
+sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/configs/local-records.conf
 ```
 Module Config
 ```
-sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/module-config.conf
+sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/configs/module-config.conf
 ```
 Multithreaded UDP
 ```
-sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/multithreaded-udp.conf
+sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/configs/multithreaded-udp.conf
 ```
 Multithreading (Recommended)
 
 Note: For multi-core machines number of threads equals number of cores is a good rule, should be a factor of two.
 ```
-sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/multithreading.conf
+sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/configs/multithreading.conf
 ```
 Prefetch (Recommended)
 ```
-sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/prefetch.conf
+sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/configs/prefetch.conf
 ```
 Private Address Ranges (Recommended)
 ```
-sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/private-ranges.conf
+sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/configs/private-ranges.conf
 ```
 Rate Limiting
 ```
-sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/rate-limiting.conf
+sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/configs/rate-limiting.conf
 ```
 Redis Cache DB
 
-Notes: Requires [module-config.conf](https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/module-config.conf)).
+Notes: Requires [module-config.conf](https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/configs/module-config.conf)).
 
 Unbound must be compiled with both --with-libhiredis and --enable-cachedb flags enabled. Check if your version supports this with 'unbound -V', it probably doesn't (but [mine do](https://github.com/saint-lascivious/unbound-config/tree/master/binaries)).
 
@@ -176,29 +176,29 @@ sudo sed -i '/logfile \/var\/log\/redis\/redis-server.log/s/^/#/g' $file
 sudo systemctl restart redis
 ```
 ```
-sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/redis.conf
+sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/configs/redis.conf
 ```
 Remote Control
 
 Note: Remember to run unbound-control-setup on the Unbound host before trying to use unbound-control.
 ```
-sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/remote-control.conf
+sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/configs/remote-control.conf
 ```
 Root Hints
 ```
-sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/root-hints.conf
+sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/configs/root-hints.conf
 ```
 Serve Expired Records
 ```
-sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/serve-expired-records.conf
+sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/configs/serve-expired-records.conf
 ```
 Server Identity
 ```
-sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/server-identity.conf
+sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/configs/server-identity.conf
 ```
 Verbosity (Recommended)
 ```
-sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/verbosity.conf
+sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/configs/verbosity.conf
 ```
 
 * Restart unbound
