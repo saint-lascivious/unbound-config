@@ -6,10 +6,10 @@
 
 export LC_ALL=C
 
-# unbound-config version
-version="1.6"
+# unbound-config script version
+version="1.6.1"
 
-# unbound-config repository paths
+# unbound-config repository variables
 master_repo_path="https://raw.githubusercontent.com/saint-lascivious/unbound-config/master"
 binary_repo_path="$master_repo_path/binaries"
 config_repo_path="$master_repo_path/configs"
@@ -18,7 +18,7 @@ script_repo_path="$master_repo_path/script"
 # Current unbound-config Unbound binary version
 unbound_version="1.14.1"
 
-# More Unbound vars
+# Unbound variables
 unbound_dir="/usr/sbin"
 unbound_config_dir="/etc/unbound/unbound.conf.d"
 # Bizarrely not the same path as any other unbound binary
@@ -763,6 +763,8 @@ configure_cachedb() {
             echo -e "Installing redis.conf ..."
             wget -q --show-progress "$config_repo_path/redis.conf" -P "$unbound_config_dir"
             echo -e "\t- Done\n"
+            # Configure the redis-server insstance
+            echo -e "Configuring the Redis server ..."
             # Make Redis provide a single small persistent cache database
             sed -i '/databases 16/s/^/#/g' "$redis_conf"
             sed -i '/#databases 16/a databases 1' "$redis_conf"
@@ -784,6 +786,7 @@ configure_cachedb() {
             sed -i '/#slowlog-max-len 128/a slowlog-max-len 16' "$redis_conf"
             # Logging is very disk intensive
             sed -i '/logfile \/var\/log\/redis\/redis-server.log/s/^/#/g' "$redis_conf"
+            echo -e "\t- Done\n"
             # Restart both Redis and Unbound services so they pick up our changes
             service_action="restart"
             # Redis first
@@ -961,6 +964,35 @@ uninstall_unbound() {
     message_box
 }
 
+# The current user needs to be root or have access to sudo
+if [[ ! "$EUID" -eq "0" ]];then
+    # Make sure sudo is installed
+    package="sudo"
+    test_package
+    if [[ -x "$(command -v sudo)" ]]; then
+        # Preserve the environment when re-running with sudo
+        exec sudo -E bash "$0" "$@"
+        exit "$?"
+    else
+        echo -e "\e[31;1m\t- Run unbound-config as root or install sudo\e[0m\n"
+        echo -e "\t- Aborting"
+        exit 1
+    fi
+else
+    # Only print the header once, and only if we're actually doing something
+    # substantial
+    # Don't print header for help functions, version functions, or the mini
+    # help function
+    if [[ -n "$1" ]]; then
+        # There's almost certainly a better way to do this
+        if [[ "$1" != "-h" ]] && [[ "$1" != "help" ]] && [[ "$1" != "--help" ]]; then
+            if [[ "$1" != "-v" ]] && [[ "$1" != "version" ]] && [[ "$1" != "--version" ]]; then
+                obnoxious_header
+            fi
+        fi
+    fi
+fi
+
 # Define the options unbound-config accepts and assign their function
 case "${1}" in
     # These functions process arguments themselves
@@ -988,23 +1020,4 @@ if [[ -z "$1" ]]; then
    echo -e "unbound-config v$version requires one or more flags to operate"
    echo -e "Use 'unbound-config --help' for detailed help information"
    exit 0
-fi
-
-# The current user needs to be root or have access to sudo
-if [[ ! "$EUID" -eq "0" ]];then
-    # Make sure sudo is installed
-    package="sudo"
-    test_package
-    if [[ -x "$(command -v sudo)" ]]; then
-        # Preserve the environment when re-running with sudo
-        exec sudo -E bash "$0" "$@"
-        exit "$?"
-    else
-        echo -e "\e[31;1m\t- Run unbound-config as root or install sudo\e[0m\n"
-        echo -e "\t- Aborting"
-        exit 1
-    fi
-else
-    # Only do this once
-    obnoxious_header
 fi

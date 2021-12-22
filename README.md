@@ -371,7 +371,7 @@ Where OPTION is one (1) of
 
     -v                      Displays the unbound-config version
     version
-    --version               Current unbound-config version v1.5
+    --version               Current unbound-config version v1.6.1
 ```
 
 The full list of unbound-config dependencies is as follows:
