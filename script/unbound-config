@@ -7,7 +7,7 @@
 export LC_ALL=C
 
 # unbound-config script version
-version="1.6.1"
+version="1.6.2"
 
 # unbound-config repository variables
 master_repo_path="https://raw.githubusercontent.com/saint-lascivious/unbound-config/master"
@@ -90,7 +90,9 @@ backup_config() {
     # Sortable universal datetime
     date_format="$(date +%Y%m%d%H%M)"
     # Sanitise user input backup IDs
-    input_format="$(echo "$2" | sed -e 's/[^A-Za-z0-9._-]/_/g')"
+    # Split out legal_chars function to shut shellcheck.net up
+    legal_chars="$(sed -e 's/[^A-Za-z0-9._-]/_/g')"
+    input_format="$(echo "$2" | $legal_chars)"
     launch_dir="$(pwd)"
     if [[ -d "$unbound_config_dir" ]]; then
         # There is an Unbound config directory, try check if it is empty or not
@@ -170,7 +172,7 @@ remove_config() {
                     echo -e "Removing current Unbound configuration ..."
                     # It's probably safe to clear the configuration directory
                     # Make sure the wildcard doesn't expand to anything spicy
-                    rm -fr ${unbound_config_dir}/*
+                    rm -fr ${unbound_config_dir/*}
                     echo -e "\t- Done\n"
                 else
                     # No Unbound configuration exists
@@ -323,12 +325,14 @@ restore_backup() {
                         title_text="This command will $action_text"
                         confirm_action
                         echo -e "Removing current Unbound configuration if any exists..."
-                        # If we are restoring a backup, first nuke any current config
+                        # If we are restoring a backup, first nuke any current
+                        # config
                         rm -fr ${unbound_config_dir/*}
                         echo -e "\t- Done\n"
                         # Extract the archive to its destination
                         echo -e "Restoring unbound-config backup ID $backup_id...\n"
-                        # As with backup_config, disable tar default remote tape drive
+                        # As with backup_config, disable tar default remote
+                        # remote tape drive
                         # Why is this even the default? Seriously
                         tar -vzxf "$unbound_config_dir-backup/$backup_id.tar.gz" -C "$unbound_config_dir" --force-local
                         echo -e "\n\t- Done"
@@ -515,7 +519,8 @@ test_package() {
         else
             # At this point support starts getting getting pretty questionable
             # I'm not saying we only support Debian and Ubuntu derivatives
-            # ...but also, we probably only support Debian and Ubuntu derivatives
+            # ...but also, we probably only support Debian and Ubuntu
+            # derivatives
             echo -e "Can not reliably check for dependencies on this system\n"
             echo -e "$package is either not installed or not in your \$PATH"
             echo -e "Ensure $package is available before running unbound-config again\n"
@@ -787,7 +792,7 @@ configure_cachedb() {
             # Logging is very disk intensive
             sed -i '/logfile \/var\/log\/redis\/redis-server.log/s/^/#/g' "$redis_conf"
             echo -e "\t- Done\n"
-            # Restart both Redis and Unbound services so they pick up our changes
+            # Restart both Redis and Unbound services to pick up our changes
             service_action="restart"
             # Redis first
             service="redis"
@@ -854,7 +859,8 @@ install_script() {
     echo -e "Downloading and installing unbound-config ...\n"
     # Always pull the latest unbound-config from git
     wget -nv -q --show-progress "$script_repo_path/unbound-config" -O "$script_dir/unbound-config"
-    # Set owner:group for unbound-config if we install to the user's /home/$USER/bin directory
+    # Set owner:group for unbound-config if we install to the user's
+    # /home/$USER/bin directory
     if [[ "$script_dir" == "$user_bin_dir" ]]; then
     chown "$script_user":"$script_user" "$script_dir/unbound-config"
     fi
@@ -868,7 +874,8 @@ install_script() {
 # Install unbound-config Unbound binaries
 install_unbound() {
     # Use the system package manager's setup of Unbound
-    # (seems counterintuitive I know, but we use the package manager's init system)
+    # Seems pretty counterintuitive I know, but we use the system package
+    # manager's init system for unbound_config binaries
     action_text="install unbound-config Unbound binaries"
     title_text="Before you $action_text"
     message_text="It is safe, but not necessarily recommended to replace the system unbound binaries with those provided. Any updates to the system package will remove the custom binary."
