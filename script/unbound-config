@@ -7,7 +7,7 @@
 export LC_ALL=C
 
 # unbound-config script version
-version="1.6.2"
+version="1.7"
 
 # unbound-config repository variables
 master_repo_path="https://raw.githubusercontent.com/saint-lascivious/unbound-config/master"
@@ -582,6 +582,39 @@ test_unbound() {
     echo -e "\t- Done\n"
 }
 
+# Various services may be doing something weird with /etc/resolv.conf
+# We won't try and do anything about it, yet at least, but we should
+# warn the user if resolv.conf may be doing something strange
+test_resolvconf() {
+    # Test for service before we try and use it
+    package="init-system-helpers"
+    test_package
+    # Test resolvconf service status
+    # It may do weird stuff when Unbound is present
+    # This behavious was present in bullseye and lesser, but it pointed to a
+    # unbound congifuration in /var/unbound/ which would not have existed
+    resolvconf_check="$(service resolvconf status | grep "Active: active" )"
+    if [[ -n "$resolvconf_check" ]]; then
+        show_warning="true"
+        resolvconf_warning="resolvconf service status: active\n"
+    fi
+    # Test systemd-resolved service status, may also do weird stuff
+    systemd_resolved_check="$(service systemd-resolved status | grep "Active: active" )"    
+    if [[ -n "$systemd_resolved_check" ]]; then
+        show_warning="true"
+        resolved_warning="resolved service status: active\n"
+    fi
+    # See if we should warn the user about it
+    if [[ "$show_warning" == "true" ]]; then
+        # We should, so we will
+        title_text="Possible local resolution conflict detected"
+        # Should format well when one or more services we test for are running
+        # May need to override $height locally if we end up testing for more cases
+        message_text="A possible conflict with a resolv.conf related service exists\n\n"$resolvconf_warning""$resolved_warning"\nThis may cause unintended operation"
+        message_box
+    fi
+}
+
 # Install unbound-config recommended configuration fragments
 config_recommended() {
     # We need to know this for later
@@ -709,6 +742,7 @@ config_recommended() {
     service_action="restart"
     service="unbound"
     service_handler
+    test_resolvconf
 }
 
 # Download unbound-config .tar.gz packaged Unbound binaries
@@ -878,7 +912,7 @@ install_unbound() {
     # manager's init system for unbound_config binaries
     action_text="install unbound-config Unbound binaries"
     title_text="Before you $action_text"
-    message_text="It is safe, but not necessarily recommended to replace the system unbound binaries with those provided. Any updates to the system package will remove the custom binary."
+    message_text="It is safe, but not necessarily recommended to replace the system unbound binaries with those provided. Any updates system updates to unbound packages will remove the custom unbound binaries."
     message_box
     package="unbound"
     test_package
@@ -919,6 +953,7 @@ install_unbound() {
     echo -e "\t- Done\n"
     service_action="start"
     service_handler
+    test_resolvconf
 }
 
 # Uninstall unbound-config Unbound binaries
