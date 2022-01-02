@@ -83,6 +83,10 @@ Note: You probably don't have a NAT64 Gateway.
 ```
 sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/configs/dns64.conf
 ```
+Disable Logging
+```
+sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/configs/disable-logging.conf
+```
 EDNS Buffer
 ```
 sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/configs/edns-buffer.conf
@@ -113,8 +117,6 @@ sudo apt install libevent-dev
 sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/configs/libevent.conf
 ```
 Local Records
-
-Note: Example Only - Must be edited, contains deliberately garbage values.
 ```
 sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/configs/local-records.conf
 ```
@@ -274,15 +276,17 @@ A number of additional features are available via the unbound-config utility scr
 
 The full --help text for unbound-config is as follows:
 ```
+Usage: unbound-control [OPTION [PARAM]]
+
 Where OPTION is one (1) of
 
     -b                      Backup the current Unbound configuration to a
-    backup                  .tar.gz archive located within
-    --backup-config         /etc/unbound/unbound.conf.d-backup
+    --backup-config         .tar.gz archive located within
+                            /etc/unbound/unbound.conf.d-backup
 
                             Takes an optional parameter (to be normalised and)
                             used as the backup ID, IDs containing spaces
-                            must be quoted, e.g. \"my unbound backup\"
+                            must be quoted, e.g. "my unbound backup"
                             The default is a timestamp in the format:
                             YYYYMMDDHHMM
 
@@ -290,26 +294,32 @@ Where OPTION is one (1) of
                             compliant timestamp will be used instead:
                             YYYY-MM-DDTHH:MM:SS±00:00
 
-    examples:               unbound-config --backup-config \"my unbound backup\"
+    examples:               unbound-config --backup-config "my unbound backup"
                             unbound-config --backup-config --rfc3339
 
+    -c                      Install recommended unbound-config config
+    --config-recommended    fragments:
+                            Base (Required) Buffers, Caches, Hardening,
+                            Libevent, Multithreading, Prefetch, Private
+                            Address Ranges, Verbosity
+
     -C                      Install and configure a 16MB Redis persistent
-    cachedb                 cache database with an LRU eviction policy for
-    --configure-cachedb     use with the Unbound cachedb module
+    --configure-cachedb     cache database with an LRU eviction policy for
+                            use with the Unbound cachedb module
 
                             Your Unbound binaries probably don't support this
                             but unbound-config Unbound binaries do
 
     -d                      Download unbound-config Unbound binaries in a
-    download                .tar.gz archive to /tmp
-    --download-unbound
+    --download-unbound      .tar.gz archive to /tmp
+
                             Takes an optional parameter [--force] to remove an
                             existing binary package before downloading a new
                             one
 
     -D ID                   Delete an unbound-config backup with a specified
-    delete ID               backup ID
-    --delete-backup ID
+    --delete-backup ID      backup ID
+
                             Use --list-backups to list possible backup IDs
 
                             The [--all] flag may be provided in place of a
@@ -319,12 +329,12 @@ Where OPTION is one (1) of
                             unbound-config --delete-backup --all
 
     -h                      Display this help dialogue
-    help
     --help
 
-    -i                      Install unbound-config unbound binaries:
-    unbound                 unbound, unbound-anchor, unbound-checkconf,
-    --install-unbound       unbound-control, unbound-control-setup,
+    -i                      Install unbound-config unbound binaries built from
+    --install-unbound       Unbound master 1.14.1 source:
+                            unbound, unbound-anchor, unbound-checkconf,
+                            unbound-control, unbound-control-setup,
                             unbound-host
 
                             Takes an optional parameter [--unbound-only] to
@@ -338,40 +348,40 @@ Where OPTION is one (1) of
                             unbound-config --install-unbound --unbound-only
 
     -I                      Download and install the unbound-config script to
-    script                  local storage, or update an existing locally
-    --install-script        installed copy
+    --install-script        local storage, or update an existing locally
+                            installed copy
 
     -l                      List possible backup IDs found in
-    list                    /etc/unbound/unbound.conf.d-backup
-    --list-backups          Useful for getting backup IDs for --delete-backup
+    --list-backups          /etc/unbound/unbound.conf.d-backup
+                            Useful for getting backup IDs for --delete-backup
                             and --restore-backup
 
     -r                      Remove the current Unbound configuration
-    remove                  A backup is required before removing any existing
-    --remove-config         configuration, prompts for backup if none exist
-
-    -r                      Remove the current Unbound configuration
-    remove                  A backup is required before removing any existing
-    --remove-config         configuration, prompts for backup if none exist
+    --remove-config         A backup is required before removing any existing
+                            configuration, prompts for backup if none exist
 
     -R ID                   Restore a backup of your Unbound configuration to
-    restore ID              the Unbound configuration directory located at
-    --restore-backup ID     /etc/unbound/unbound.conf.d
+    --restore-backup ID     the Unbound configuration directory located at
+                            /etc/unbound/unbound.conf.d
 
     example:                unbound-config --restore-backup my_unbound_backup
 
     -t                      Test the validated resolution capabilities of the
-    test                    local Unbound installation by querying external
-    --test-unbound          domains with known broken and known good DNSSEC
+    --test-unbound          local Unbound installation by querying external
+                            domains with known broken and known good DNSSEC
                             records
 
+    -T                      Test for errors in the Unbound configuration by
+    --test-config           running unbound-checkconf on all .conf files in
+                            the configuration directory located at
+                            /etc/unbound/unbound.conf.d
+
     -u                      Uninstall any unbound binaries unbound-config may
-    uninstall               have installed
-    --uninstall-unbound
+    --uninstall-unbound     have installed
 
     -v                      Displays the unbound-config version
-    version
-    --version               Current unbound-config version v1.7
+    --version
+                            Current unbound-config version v1.8"
 ```
 
 The full list of unbound-config dependencies is as follows:
