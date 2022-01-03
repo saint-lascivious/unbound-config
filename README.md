@@ -69,7 +69,7 @@ Cache TTL
 ```
 sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/configs/cache-ttl.conf
 ```
-Address Capitalization Randomization
+Address Capitalization Randomization (Recommended)
 ```
 sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/configs/caps-for-id.conf
 ```
@@ -77,9 +77,9 @@ Deny ANY Requests
 ```
 sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/configs/deny-any.conf
 ```
-DNS64 (Requires NAT64 Gateway)
+DNS64
 
-Note: You probably don't have a NAT64 Gateway.
+Note: Requires a NAT64 gateway, you probably don't have one.
 ```
 sudo wget https://raw.githubusercontent.com/saint-lascivious/unbound-config/master/configs/dns64.conf
 ```
@@ -360,6 +360,12 @@ Where OPTION is one (1) of
     --remove-config         A backup is required before removing any existing
                             configuration, prompts for backup if none exist
 
+    -rh                     Download and install a current root.hints file to
+    --root-hints            the Unbound system directory located at
+                            /var/lib/unbound
+                            For use with root-hints.conf or installed
+                            automatically when using --recommended-config
+
     -R ID                   Restore a backup of your Unbound configuration to
     --restore-backup ID     the Unbound configuration directory located at
                             /etc/unbound/unbound.conf.d
@@ -389,12 +395,12 @@ The full list of unbound-config dependencies is as follows:
 dpkg init-system-helpers libevent-dev libhiredis-dev redis-server sudo tar unbound wget whiptail
 ```
 ```
-    Package:                Explanation:
+    Package:                Explanation of use:
 
     dpkg                    dpkg-query is used to test for the presence of
                             dependencies as required when required
 
-    init-system-helpers     Used for unbound service management
+    init-system-helpers     Used for various service management tasks
 
     libevent-dev            Used in recommended config for large potentially
                             very large outgoing port ranges
